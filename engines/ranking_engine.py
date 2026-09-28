@@ -92,7 +92,7 @@ _NON_ATTRACTION_TYPES = {
     "storage",
 }
 
-async def rank_places(city: str, trip: TripState, weather: Weather, check_only: bool = False) -> Optional[List[Place]]:
+async def rank_places(city: str, weather: Weather, check_only: bool = False) -> Optional[List[Place]]:
     query = f"Top tourist attractions in {city}"
     # Fetch exactly 30 places
     raw_places = await search_google_places(query, max_results=30, check_only=check_only)
@@ -138,7 +138,7 @@ async def rank_places(city: str, trip: TripState, weather: Weather, check_only: 
         )
     return places
 
-async def rank_food(city: str, trip: TripState, weather: Weather, check_only: bool = False) -> Optional[List[Place]]:
+async def rank_food(city: str, weather: Weather, check_only: bool = False) -> Optional[List[Place]]:
     query = f"Best popular restaurants in {city}"
     # Fetch exactly 15 restaurants
     raw_places = await search_google_places(query, max_results=15, check_only=check_only)

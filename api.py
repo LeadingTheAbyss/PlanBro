@@ -378,13 +378,7 @@ async def get_cross_transport(source: str, destination: str):
 
 @app.get("/api/places")
 async def get_places(destination: str, check_only: bool = Query(False), user=Depends(check_and_increment_quota("places"))):
-    trip = TripState(
-        trip_id="T1", mode="direct", passengers=[],
-        source_city="Delhi", destination_city=destination,
-        start_date=datetime.now(), end_date=datetime.now() + timedelta(days=3),
-        total_budget=50000
-    )
-    places = await rank_places(destination, trip, Weather.SUNNY, check_only=check_only)
+    places = await rank_places(destination, Weather.SUNNY, check_only=check_only)
     if places is None:
         return {"status": "cache_miss"}
     
@@ -429,13 +423,7 @@ from engines.ranking_engine import rank_food
 
 @app.get("/api/food")
 async def get_food(destination: str, check_only: bool = Query(False), user=Depends(check_and_increment_quota("food"))):
-    trip = TripState(
-        trip_id="T1", mode="direct", passengers=[],
-        source_city="Delhi", destination_city=destination,
-        start_date=datetime.now(), end_date=datetime.now() + timedelta(days=3),
-        total_budget=50000
-    )
-    places = await rank_food(destination, trip, Weather.SUNNY, check_only=check_only)
+    places = await rank_food(destination, Weather.SUNNY, check_only=check_only)
     if places is None:
         return {"status": "cache_miss"}
     
