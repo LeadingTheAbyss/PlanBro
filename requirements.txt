@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+httpx
+asyncpg
+python-dotenv
+requests
+pydantic
+pdfplumber
+websockets
+alns
+numpy
+bcrypt
+google-auth
+boto3

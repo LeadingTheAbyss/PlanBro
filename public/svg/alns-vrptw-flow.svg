@@ -1,0 +1,297 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2350" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e293b"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#15803d"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="2350" fill="#f8fafc"/>
+  <text x="800" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a">ALNS PC-VRPTW Solver — services/routing_engine.py</text>
+  <text x="800" y="54" text-anchor="middle" font-size="12" fill="#64748b">optimize_itinerary() → alns_solve() — Adaptive Large Neighborhood Search over a Prize-Collecting VRP with Time Windows</text>
+
+  <!-- ===================== INPUTS ===================== -->
+  <g>
+    <rect x="40" y="80" width="1520" height="110" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <text x="60" y="103" font-size="14" font-weight="700" fill="#1e3a8a">Inputs — optimize_itinerary(places_data, days_count, hotel_coords, passengers, arrival_offset_mins)</text>
+
+    <rect x="60" y="115" width="330" height="60" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+    <text x="225" y="135" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e3a8a">places_data: List[Dict]</text>
+    <text x="225" y="151" text-anchor="middle" font-size="10" fill="#334155">enriched via _enrich(): lat/lng, dur_mins,</text>
+    <text x="225" y="165" text-anchor="middle" font-size="10" fill="#334155">is_food, rating, prize = rating × 1000</text>
+
+    <rect x="410" y="115" width="290" height="60" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+    <text x="555" y="135" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e3a8a">days_count: int</text>
+    <text x="555" y="151" text-anchor="middle" font-size="10" fill="#334155">number of route/day buckets</text>
+    <text x="555" y="165" text-anchor="middle" font-size="10" fill="#334155">(one list per day)</text>
+
+    <rect x="720" y="115" width="290" height="60" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+    <text x="865" y="135" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e3a8a">hotel_coords: (lat, lng)?</text>
+    <text x="865" y="151" text-anchor="middle" font-size="10" fill="#334155">used as depot; else depot = centroid</text>
+    <text x="865" y="165" text-anchor="middle" font-size="10" fill="#334155">of all enriched places</text>
+
+    <rect x="1030" y="115" width="510" height="60" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+    <text x="1285" y="135" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e3a8a">passengers: List[Dict]</text>
+    <text x="1285" y="151" text-anchor="middle" font-size="10" fill="#334155">drives fatigue_cap_mins + transit_mult</text>
+    <text x="1285" y="165" text-anchor="middle" font-size="10" fill="#334155">(ages used for demographic scaling)</text>
+  </g>
+
+  <path d="M 800 190 L 800 220" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===================== FATIGUE CAP CALC ===================== -->
+  <g>
+    <rect x="40" y="225" width="1520" height="170" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="60" y="248" font-size="14" font-weight="700" fill="#9a3412">Dynamic Fatigue Cap Calculation — compute_fatigue_cap_mins(passengers), compute_transit_multiplier(passengers)</text>
+
+    <rect x="70" y="262" width="450" height="115" rx="8" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <text x="295" y="282" text-anchor="middle" font-size="12" font-weight="700" fill="#9a3412">Demographic decision tree (ages extracted from passengers)</text>
+    <text x="90" y="302" font-size="11" fill="#1e293b">if any age &lt; 6 (toddlers)</text><text x="420" y="302" text-anchor="end" font-size="11" font-weight="700" fill="#c2410c">→ 300 min (5 hrs)</text>
+    <text x="90" y="322" font-size="11" fill="#1e293b">elif any age &gt; 70 (elderly)</text><text x="420" y="322" text-anchor="end" font-size="11" font-weight="700" fill="#c2410c">→ 360 min (6 hrs)</text>
+    <text x="90" y="342" font-size="11" fill="#1e293b">else (default adults)</text><text x="420" y="342" text-anchor="end" font-size="11" font-weight="700" fill="#c2410c">→ 480 min (8 hrs)</text>
+    <text x="90" y="362" font-size="10" fill="#64748b">no passengers / no ages → default 480 min</text>
+
+    <rect x="550" y="262" width="450" height="115" rx="8" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <text x="775" y="282" text-anchor="middle" font-size="12" font-weight="700" fill="#9a3412">Transit multiplier (mobility-constrained groups)</text>
+    <text x="570" y="305" font-size="11" fill="#1e293b">if any age &lt; 6 OR age &gt; 70:</text>
+    <text x="570" y="325" font-size="11" font-weight="700" fill="#c2410c">transit_mult = 1.25×  (25% slower travel)</text>
+    <text x="570" y="348" font-size="11" fill="#1e293b">else: transit_mult = 1.0×</text>
+    <text x="570" y="366" font-size="10" fill="#64748b">applied to every edge in the time matrix</text>
+
+    <rect x="1030" y="262" width="510" height="115" rx="8" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <text x="1285" y="282" text-anchor="middle" font-size="12" font-weight="700" fill="#9a3412">Time matrix + depot construction</text>
+    <text x="1050" y="303" font-size="10.5" fill="#1e293b">_build_real_time_matrix(nodes, transit_mult):</text>
+    <text x="1050" y="320" font-size="10" fill="#334155">Haversine distance × urban speed (25 km/h) × transit_mult</text>
+    <text x="1050" y="337" font-size="10" fill="#334155">min 5 mins per edge; stub for OSRM/Mapbox/Google matrix</text>
+    <text x="1050" y="357" font-size="10" fill="#334155">nodes = [depot] + enriched places</text>
+  </g>
+
+  <path d="M 800 395 L 800 425" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===================== INITIALIZATION ===================== -->
+  <g>
+    <rect x="40" y="430" width="1520" height="100" rx="12" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+    <text x="60" y="453" font-size="14" font-weight="700" fill="#14532d">Initial State — PCVRPTW_State + Greedy Construction</text>
+    <text x="70" y="474" font-size="11" fill="#1e293b">routes = [[] for _ in range(days_count)]   unassigned = all non-depot node IDs</text>
+    <text x="70" y="492" font-size="11" fill="#1e293b">Greedy repair: for each unassigned place, insert into the day with the FEWEST places so far (min(range(days_count), key=lambda d: len(routes[d])))</text>
+    <text x="70" y="510" font-size="11" fill="#1e293b">current_state.cost = evaluate()  →  best_state = current_state.copy()  |  temp = 2000.0, cooling_rate = 0.95</text>
+  </g>
+
+  <path d="M 800 530 L 800 560" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===================== ALNS LOOP ===================== -->
+  <g>
+    <rect x="40" y="565" width="1520" height="900" rx="14" fill="#fefce8" stroke="#facc15" stroke-width="2.5"/>
+    <text x="800" y="592" text-anchor="middle" font-size="15" font-weight="700" fill="#713f12">alns_solve() — Destroy / Repair Loop</text>
+    <text x="800" y="610" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b91c1c">while time.time() - start_time &lt; max_runtime (0.45s)  ⟶  strictly &lt; 500ms end-to-end (optimize_itinerary wraps this in asyncio.to_thread)</text>
+
+    <!-- copy -->
+    <rect x="620" y="630" width="360" height="45" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+    <text x="800" y="657" text-anchor="middle" font-size="11.5" fill="#713f12">new_state = current_state.copy()</text>
+    <path d="M 800 675 L 800 700" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- destroy -->
+    <rect x="200" y="705" width="1200" height="130" rx="10" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="800" y="726" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7f1d1d">DESTROY OPERATOR — Random Removal</text>
+    <text x="220" y="746" font-size="11" fill="#1e293b">remove_count = random.randint(1, min(3, max(1, len(nodes) - 1)))   — remove 1–3 nodes per iteration</text>
+    <text x="220" y="766" font-size="11" fill="#1e293b">for each removal: pick a random non-empty day route, pick a random index within it, .pop(idx)</text>
+    <text x="220" y="786" font-size="11" fill="#1e293b">removed nodes collected into a set() to avoid duplicates, then new_state.unassigned.extend(removed)</text>
+    <text x="220" y="806" font-size="10" fill="#64748b">effect: "organic node dropping" — capacity constraints later penalize routes that keep too much</text>
+    <path d="M 800 835 L 800 860" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- repair -->
+    <rect x="200" y="865" width="1200" height="150" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="800" y="886" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14532d">REPAIR OPERATOR — Greedy Insertion</text>
+    <text x="220" y="906" font-size="11" fill="#1e293b">random.shuffle(unassigned)  — randomize insertion order</text>
+    <text x="220" y="926" font-size="11" fill="#1e293b">for each unassigned place_id: try EVERY (day, idx) position across all days/routes</text>
+    <text x="220" y="946" font-size="11" fill="#1e293b">at each candidate position: insert → new_state.evaluate() → cost; revert (pop); keep lowest-cost (day, idx)</text>
+    <text x="220" y="966" font-size="11" fill="#1e293b">commit best_insert into routes; remove place_id from unassigned</text>
+    <text x="220" y="990" font-size="10" fill="#64748b">this exhaustive re-evaluation per candidate is the dominant cost — bounded by the 0.45s wall-clock budget</text>
+    <path d="M 800 1015 L 800 1040" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- evaluate / cost function detail -->
+    <rect x="120" y="1045" width="1360" height="210" rx="10" fill="#ede9fe" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="800" y="1067" text-anchor="middle" font-size="12.5" font-weight="700" fill="#4c1d95">PCVRPTW_State.evaluate() — Objective / Cost Function (minimized)</text>
+    <text x="800" y="1084" text-anchor="middle" font-size="10.5" font-weight="700" fill="#5b21b6">Cost = Penalty_TimeWarp + Penalty_OverCapacity + Travel_Time − Prize_Collected</text>
+
+    <rect x="140" y="1095" width="420" height="145" rx="8" fill="#ffffff" stroke="#c4b5fd"/>
+    <text x="350" y="1113" text-anchor="middle" font-size="11" font-weight="700" fill="#4c1d95">Unassigned penalty</text>
+    <text x="155" y="1132" font-size="10" fill="#334155">for each unassigned node: cost += node.prize</text>
+    <text x="155" y="1148" font-size="10" fill="#334155">(lost prize = missed opportunity cost,</text>
+    <text x="155" y="1163" font-size="10" fill="#334155">prize = rating × 1000)</text>
+    <text x="155" y="1185" font-size="10" fill="#334155">Per visited node: cost −= node.prize</text>
+    <text x="155" y="1201" font-size="10" fill="#334155">(reward for including it in a route)</text>
+    <text x="155" y="1223" font-size="10" fill="#334155">Travel time accumulated via time_matrix</text>
+    <text x="155" y="1237" font-size="10" fill="#334155">between consecutive stops in each day_route</text>
+
+    <rect x="590" y="1095" width="420" height="145" rx="8" fill="#ffffff" stroke="#c4b5fd"/>
+    <text x="800" y="1113" text-anchor="middle" font-size="11" font-weight="700" fill="#4c1d95">Soft Time Windows — Meals (time warp)</text>
+    <text x="605" y="1132" font-size="10" fill="#334155">MEAL_WINDOWS (mins from 06:00 day start):</text>
+    <text x="605" y="1148" font-size="9.7" fill="#334155">breakfast 60–240 (07:00–10:00)</text>
+    <text x="605" y="1163" font-size="9.7" fill="#334155">lunch 360–480 (12:00–14:00)</text>
+    <text x="605" y="1178" font-size="9.7" fill="#334155">dinner 780–900 (19:00–21:00)</text>
+    <text x="605" y="1198" font-size="10" fill="#334155">if food node arrives EARLY → wait (day_time = window_start)</text>
+    <text x="605" y="1214" font-size="10" font-weight="700" fill="#b91c1c">if arrives LATE → time-warp penalty:</text>
+    <text x="605" y="1229" font-size="10" font-weight="700" fill="#b91c1c">  (day_time − window_end) × 50.0</text>
+
+    <rect x="1040" y="1095" width="420" height="145" rx="8" fill="#ffffff" stroke="#c4b5fd"/>
+    <text x="1250" y="1113" text-anchor="middle" font-size="11" font-weight="700" fill="#4c1d95">Fatigue Capacity — Organic Node Dropping</text>
+    <text x="1055" y="1132" font-size="10" fill="#334155">day_time accumulates: travel + wait + dur_mins</text>
+    <text x="1055" y="1152" font-size="10" fill="#334155">per stop, across the whole day's route</text>
+    <text x="1055" y="1174" font-size="10" font-weight="700" fill="#b91c1c">if day_time &gt; fatigue_cap_mins:</text>
+    <text x="1055" y="1190" font-size="10" font-weight="700" fill="#b91c1c">  cost += (day_time − fatigue_cap) × 200.0</text>
+    <text x="1055" y="1210" font-size="10" fill="#334155">(massive penalty — 200/min vs 50/min for meals —</text>
+    <text x="1055" y="1225" font-size="10" fill="#334155">drives ALNS to naturally drop excess nodes)</text>
+
+    <path d="M 800 1255 L 800 1280" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- acceptance criteria -->
+    <rect x="150" y="1285" width="1300" height="150" rx="10" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="800" y="1307" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0c4a6e">ACCEPTANCE CRITERIA — Simulated Annealing</text>
+    <text x="170" y="1328" font-size="11" fill="#1e293b" font-weight="700">if new_state.cost &lt; current_state.cost:</text>
+    <text x="190" y="1345" font-size="10.5" fill="#334155">accept unconditionally → current_state = new_state</text>
+    <text x="190" y="1361" font-size="10.5" fill="#334155">if also &lt; best_state.cost → best_state = current_state.copy()  (track global best)</text>
+    <text x="170" y="1385" font-size="11" fill="#1e293b" font-weight="700">else (worse solution):</text>
+    <text x="190" y="1402" font-size="10.5" fill="#334155">prob = exp(−(new_cost − current_cost) / max(0.01, temp))</text>
+    <text x="190" y="1418" font-size="10.5" fill="#334155">accept with probability `prob` (Metropolis criterion) → allows escaping local optima</text>
+    <text x="800" y="1430" text-anchor="middle" font-size="10" font-style="italic" fill="#0c4a6e">temp *= cooling_rate (0.95) every iteration — geometric cooling schedule</text>
+
+    <path d="M 800 1435 L 800 1450" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <path d="M 900 1450 C 1200 1450, 1350 1000, 1350 700" stroke="#1e293b" stroke-width="1.6" fill="none" marker-end="url(#arrow)" stroke-dasharray="6,4"/>
+    <text x="1360" y="1000" font-size="11" font-weight="700" fill="#713f12" transform="rotate(90 1360 1000)">loop back — next iteration (until 0.45s elapsed)</text>
+
+    <rect x="600" y="1450" width="400" height="0" fill="none"/>
+  </g>
+
+  <path d="M 800 1465 L 800 1495" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===================== OUTPUT ===================== -->
+  <g>
+    <rect x="40" y="1500" width="1520" height="120" rx="12" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="2"/>
+    <text x="60" y="1523" font-size="14" font-weight="700" fill="#0c4a6e">Output — Daily Geo/Temporal Clusters</text>
+    <text x="70" y="1545" font-size="11" fill="#1e293b">assignments = {'{'} place_id: day_idx + 1 for each place_id in best_state.routes[day_idx] {'}'}  (1-indexed day numbers)</text>
+    <text x="70" y="1565" font-size="11" fill="#1e293b">log.info(f"Finished {'{'}iteration{'}'} iterations in {'{'}elapsed{'}'}s. Best Cost: {'{'}best_state.cost{'}'}")</text>
+    <text x="70" y="1585" font-size="11" fill="#1e293b">optimize_itinerary() returns {'{'} "assignments": {'{'} place_id → day_number {'}'} {'}'} — consumed by itineraryStore on the frontend</text>
+    <text x="70" y="1605" font-size="10.5" font-weight="700" fill="#b91c1c">Runtime guarantee: alns_solve max_runtime=0.45s hard cap, invoked via asyncio.to_thread — total request stays strictly &lt; 500ms for a responsive UI</text>
+  </g>
+
+  <!-- ===================== CROSS ROUTING ENGINE ===================== -->
+  <path d="M 800 1620 L 800 1660" stroke="#334155" stroke-width="2" fill="none" marker-end="url(#arrow)" stroke-dasharray="5,4"/>
+
+  <g>
+    <rect x="40" y="1665" width="1520" height="670" rx="14" fill="#fdf4ff" stroke="#e9a3f9" stroke-width="2.5"/>
+    <text x="800" y="1692" text-anchor="middle" font-size="16" font-weight="700" fill="#701a75">Multi-Leg Fallback — services/cross_routing_engine.py</text>
+    <text x="800" y="1710" text-anchor="middle" font-size="11.5" fill="#86198f">Used when a direct transport search between two cities fails — builds an offline graph route, then hydrates each leg with live/cached data</text>
+
+    <!-- direct fails -->
+    <rect x="70" y="1725" width="280" height="70" rx="8" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="210" y="1748" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7f1d1d">Direct transport search fails</text>
+    <text x="210" y="1766" text-anchor="middle" font-size="10" fill="#334155">(no direct flight/train/bus found</text>
+    <text x="210" y="1780" text-anchor="middle" font-size="10" fill="#334155">between origin and destination)</text>
+
+    <path d="M 350 1760 L 390 1760" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- load graph -->
+    <rect x="395" y="1725" width="290" height="70" rx="8" fill="#f3e8ff" stroke="#c084fc"/>
+    <text x="540" y="1746" text-anchor="middle" font-size="11" font-weight="700" fill="#6b21a8">load_graph()</text>
+    <text x="410" y="1763" font-size="9.7" fill="#334155">builds networkx MultiDiGraph from</text>
+    <text x="410" y="1777" font-size="9.7" fill="#334155">data/india_transport_graph.json (nodes + bidirectional edges)</text>
+
+    <path d="M 685 1760 L 725 1760" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- canonical city -->
+    <rect x="730" y="1725" width="330" height="70" rx="8" fill="#f3e8ff" stroke="#c084fc"/>
+    <text x="895" y="1746" text-anchor="middle" font-size="11" font-weight="700" fill="#6b21a8">get_canonical_city(origin/dest)</text>
+    <text x="745" y="1763" font-size="9.7" fill="#334155">matches against node id / aliases; if unmatched,</text>
+    <text x="745" y="1777" font-size="9.7" fill="#334155">inject_virtual_node() geocodes via Nominatim + links to 3 nearest hubs by cab</text>
+
+    <path d="M 1060 1760 L 1100 1760" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- k shortest paths -->
+    <rect x="1105" y="1725" width="420" height="70" rx="8" fill="#f3e8ff" stroke="#c084fc"/>
+    <text x="1315" y="1746" text-anchor="middle" font-size="11" font-weight="700" fill="#6b21a8">get_k_shortest_logical_paths(origin, dest, k=5)</text>
+    <text x="1120" y="1763" font-size="9.7" fill="#334155">nx.all_simple_paths(cutoff=MAX_HOPS+1=4); filters paths where</text>
+    <text x="1120" y="1777" font-size="9.7" fill="#334155">total_dist &gt; direct_dist × MAX_DETOUR_MULTIPLIER (1.6)</text>
+
+    <path d="M 210 1795 L 210 1830" stroke="#1e293b" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+    <path d="M 210 1830 L 1000 1830" stroke="#1e293b" stroke-width="1.8" fill="none"/>
+    <path d="M 1000 1830 L 1000 1795" stroke="#1e293b" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+
+    <!-- leg construction -->
+    <rect x="150" y="1835" width="1300" height="90" rx="8" fill="#fae8ff" stroke="#d8b4fe"/>
+    <text x="800" y="1856" text-anchor="middle" font-size="11.5" font-weight="700" fill="#701a75">Leg construction per candidate path</text>
+    <text x="170" y="1875" font-size="10.5" fill="#334155">For each hop (u→v): pick cheapest-duration edge as best_mode/best_dur across parallel edges (train/flight/bus/cab)</text>
+    <text x="170" y="1893" font-size="10.5" fill="#334155">total_estimated_hours = Σ(leg durations) + (hops − 1) × TRANSFER_PENALTY_HOURS (2.5h per transfer)</text>
+    <text x="170" y="1911" font-size="10.5" fill="#334155">valid_paths sorted by total_estimated_hours ascending; top k=3 passed to hydration</text>
+
+    <path d="M 800 1925 L 800 1955" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- hydration -->
+    <rect x="80" y="1960" width="1440" height="330" rx="10" fill="#ffffff" stroke="#c026d3" stroke-width="1.5"/>
+    <text x="800" y="1982" text-anchor="middle" font-size="13" font-weight="700" fill="#701a75">hydrate_cross_route(origin, dest, date, passengers) — per-leg data resolution (_fetch_live_leg)</text>
+    <text x="800" y="1999" text-anchor="middle" font-size="10.5" fill="#64748b">runs asyncio.gather() across all legs of each candidate path in parallel; a path is dropped entirely if ANY leg fails to hydrate</text>
+
+    <rect x="100" y="2012" width="330" height="130" rx="8" fill="#f0fdf4" stroke="#22c55e"/>
+    <text x="265" y="2032" text-anchor="middle" font-size="11" font-weight="700" fill="#14532d">1. DB Cache (trains)</text>
+    <text x="115" y="2050" font-size="9.7" fill="#334155">get_station_code() → query "Train" table</text>
+    <text x="115" y="2065" font-size="9.7" fill="#334155">(origin, dest, date) via Prisma-managed</text>
+    <text x="115" y="2080" font-size="9.7" fill="#334155">Postgres — cheapest, no external call</text>
+    <text x="115" y="2100" font-size="9.3" fill="#64748b">→ if rows found, wrap as</text>
+    <text x="115" y="2114" font-size="9.3" fill="#64748b">TransportOption(type=TRAIN, ...)</text>
+    <text x="115" y="2130" font-size="9.3" font-weight="700" fill="#166534">skips to step 4 if none found</text>
+
+    <rect x="450" y="2012" width="330" height="130" rx="8" fill="#f0fdf4" stroke="#22c55e"/>
+    <text x="615" y="2032" text-anchor="middle" font-size="11" font-weight="700" fill="#14532d">2. Static DGCA data (flights)</text>
+    <text x="465" y="2050" font-size="9.7" fill="#334155">load_cached_flights() DataFrame lookup by</text>
+    <text x="465" y="2065" font-size="9.7" fill="#334155">IATA-like alias; filtered by day-of-week freq</text>
+    <text x="465" y="2080" font-size="9.7" fill="#334155">string (e.g. "1234567")</text>
+    <text x="465" y="2100" font-size="9.3" fill="#334155">parses dep/arr times, handles overnight</text>
+    <text x="465" y="2114" font-size="9.3" fill="#334155">arrivals (+1 day); price = 3000 + dur×1500</text>
+    <text x="465" y="2130" font-size="9.3" font-weight="700" fill="#166534">explicitly SKIPS live flight API to save quota</text>
+
+    <rect x="800" y="2012" width="330" height="130" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+    <text x="965" y="2032" text-anchor="middle" font-size="11" font-weight="700" fill="#713f12">3. Live API (trains only)</text>
+    <text x="815" y="2050" font-size="9.7" fill="#334155">only if no cache hit: search_live_trains()</text>
+    <text x="815" y="2065" font-size="9.7" fill="#334155">— consumes real API quota</text>
+    <text x="815" y="2085" font-size="9.7" fill="#334155">filters out any result whose id contains</text>
+    <text x="815" y="2099" font-size="9.7" fill="#334155">"mock" (rejects placeholder/test data)</text>
+    <text x="815" y="2120" font-size="9.3" font-weight="700" fill="#92400e">flights never hit live API here — DGCA static</text>
+    <text x="815" y="2134" font-size="9.3" font-weight="700" fill="#92400e">only (see step 2)</text>
+
+    <rect x="1150" y="2012" width="330" height="130" rx="8" fill="#fff1f2" stroke="#fb7185"/>
+    <text x="1315" y="2032" text-anchor="middle" font-size="11" font-weight="700" fill="#881337">4. Estimated Fallback</text>
+    <text x="1165" y="2050" font-size="9.7" fill="#334155">triggers when steps 1–3 all yield nothing</text>
+    <text x="1165" y="2065" font-size="9.7" fill="#334155">dep = date @ 10:00, arr = dep + leg's</text>
+    <text x="1165" y="2080" font-size="9.7" fill="#334155">estimated_duration (from graph edge)</text>
+    <text x="1165" y="2100" font-size="9.7" fill="#334155">price: ₹600 (train) / ₹4000 (flight) flat</text>
+    <text x="1165" y="2120" font-size="9.3" font-weight="700" fill="#9f1239">provider labeled "Estimated ... (Select to</text>
+    <text x="1165" y="2134" font-size="9.3" font-weight="700" fill="#9f1239">verify)" so UI can flag it as unconfirmed</text>
+
+    <path d="M 265 2145 L 265 2175" stroke="#334155" stroke-width="1.4" fill="none"/>
+    <path d="M 615 2145 L 615 2175" stroke="#334155" stroke-width="1.4" fill="none"/>
+    <path d="M 965 2145 L 965 2175" stroke="#334155" stroke-width="1.4" fill="none"/>
+    <path d="M 1315 2145 L 1315 2175" stroke="#334155" stroke-width="1.4" fill="none"/>
+    <path d="M 265 2175 L 1315 2175" stroke="#334155" stroke-width="1.4" fill="none"/>
+    <path d="M 790 2175 L 790 2195" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <rect x="450" y="2200" width="700" height="75" rx="8" fill="#f5f3ff" stroke="#a78bfa"/>
+    <text x="800" y="2222" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4c1d95">Path assembly &amp; return</text>
+    <text x="465" y="2242" font-size="10" fill="#334155">any leg == None → entire candidate path is DROPPED (log + continue)</text>
+    <text x="465" y="2260" font-size="10" fill="#334155">successful paths: {'{'} offline_estimation, live_legs, total_price = Σ leg prices, status: "success" {'}'} — ALL successful paths returned (not just first)</text>
+  </g>
+
+  <!-- LEGEND -->
+  <g font-size="11">
+    <text x="60" y="2335" font-weight="700" fill="#0f172a">Legend:</text>
+    <line x1="140" y1="2330" x2="185" y2="2330" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="195" y="2334" fill="#334155">Sequential step</text>
+    <line x1="330" y1="2330" x2="375" y2="2330" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)" stroke-dasharray="6,4"/>
+    <text x="385" y="2334" fill="#334155">Loop-back edge</text>
+    <line x1="530" y1="2330" x2="575" y2="2330" stroke="#334155" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="5,4"/>
+    <text x="585" y="2334" fill="#334155">Cross-module handoff (fallback trigger)</text>
+  </g>
+</svg>

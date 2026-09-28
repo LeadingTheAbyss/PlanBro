@@ -1,0 +1,243 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2450" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e293b"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#15803d"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="2450" fill="#f8fafc"/>
+  <text x="800" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a">Caching Waterfall — GET /api/places, /api/food, /api/hotels, /api/transport</text>
+  <text x="800" y="54" text-anchor="middle" font-size="12" fill="#64748b">Verified directly from services/*.py — the waterfall is NOT uniform across endpoints (see red annotations)</text>
+
+  <!-- ===================== PLACES / FOOD ===================== -->
+  <g>
+    <rect x="40" y="80" width="740" height="480" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <text x="60" y="105" font-size="15" font-weight="700" fill="#1e3a8a">GET /api/places  and  GET /api/food</text>
+    <text x="60" y="122" font-size="10.5" fill="#334155">api.py → engines/ranking_engine.py rank_places()/rank_food() → services/google_places_api.py::_search_google_places_impl()</text>
+
+    <rect x="60" y="135" width="700" height="60" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="410" y="155" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e3a8a">1. Upstash Redis</text>
+    <text x="80" y="173" font-size="10" fill="#334155">_cache_get(cache_key) — key: f"places_{'{'}CACHE_VERSION{'}'}_{'{'}slug{'}'}_{'{'}max_results{'}'}" e.g. "places_v13_top_tourist_attractions_in_jaipur_30"</text>
+    <text x="80" y="188" font-size="10" fill="#334155">TTL: REDIS_TTL_SECONDS = 30 days</text>
+    <path d="M 410 195 L 410 215" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrowRed)"/>
+    <text x="430" y="210" font-size="10" fill="#dc2626" font-weight="700">MISS</text>
+
+    <rect x="60" y="220" width="700" height="60" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="410" y="240" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e3a8a">2. NeonDB — PlaceCache table (Postgres via Prisma-managed conn)</text>
+    <text x="80" y="258" font-size="10" fill="#334155">_db_get(cacheKey) — same cacheKey string as unique index; expiresAt = now + DB_TTL_DAYS (30 days)</text>
+    <text x="80" y="273" font-size="10" fill="#334155">check_only=True and BOTH Redis+DB miss → return None (short-circuits, never calls Google)</text>
+    <path d="M 410 280 L 410 300" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrowRed)"/>
+    <text x="430" y="295" font-size="10" fill="#dc2626" font-weight="700">MISS</text>
+
+    <rect x="60" y="305" width="700" height="55" rx="8" fill="#fae8ff" stroke="#c026d3"/>
+    <text x="410" y="325" text-anchor="middle" font-size="11.5" font-weight="700" fill="#701a75">3. Google Places API (searchText) — last resort</text>
+    <text x="80" y="343" font-size="10" fill="#334155">only reached if check_only=False AND both cache tiers missed</text>
+    <text x="80" y="353" font-size="9.5" fill="#64748b">google_places_api.py lines ~246–304</text>
+
+    <path d="M 410 360 L 410 380" stroke="#15803d" stroke-width="1.6" marker-end="url(#arrowGreen)"/>
+    <rect x="60" y="385" width="700" height="55" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="410" y="405" text-anchor="middle" font-size="11" font-weight="700" fill="#14532d">4. Write-back (on Google success)</text>
+    <text x="80" y="423" font-size="10" fill="#334155">_db_set() → PlaceCache row saved FIRST, then _cache_set() → Redis populated SECOND</text>
+
+    <rect x="60" y="450" width="700" height="95" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="410" y="470" text-anchor="middle" font-size="11" font-weight="700" fill="#1e3a8a">Confirmed: matches the standard 3-tier waterfall exactly</text>
+    <text x="80" y="488" font-size="9.7" fill="#334155">Redis → PlaceCache (Postgres) → Google Places API, in that order, for BOTH /api/places and /api/food</text>
+    <text x="80" y="503" font-size="9.7" fill="#334155">(food uses the same function with a food-category query variant — same cache path, same key scheme)</text>
+    <text x="80" y="521" font-size="9.7" fill="#334155">check_only short-circuits cleanly BEFORE the external call, once both cache tiers report a miss</text>
+  </g>
+
+  <!-- ===================== HOTELS ===================== -->
+  <g>
+    <rect x="820" y="80" width="740" height="480" rx="14" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+    <text x="840" y="105" font-size="15" font-weight="700" fill="#14532d">GET /api/hotels</text>
+    <text x="840" y="122" font-size="10.5" fill="#334155">api.py → ranking_engine.py rank_hotels() → services/live_hotels_api.py::search_live_hotels()</text>
+
+    <rect x="840" y="135" width="700" height="60" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="1190" y="155" text-anchor="middle" font-size="11.5" font-weight="700" fill="#14532d">1. Upstash Redis</text>
+    <text x="860" y="173" font-size="10" fill="#334155">key: f"hotels_{'{'}city.upper(){'}'}_{'{'}check_in_date{'}'}_{'{'}check_out_date{'}'}"</text>
+    <text x="860" y="188" font-size="10" fill="#334155">same 30-day-style TTL convention as Places cache</text>
+    <path d="M 1190 195 L 1190 215" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrowRed)"/>
+    <text x="1210" y="210" font-size="10" fill="#dc2626" font-weight="700">MISS</text>
+
+    <rect x="840" y="220" width="700" height="60" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="1190" y="240" text-anchor="middle" font-size="11.5" font-weight="700" fill="#14532d">2. NeonDB — Hotel table</text>
+    <text x="860" y="258" font-size="10" fill="#334155">query filtered on city, check_in_date, check_out_date</text>
+    <text x="860" y="273" font-size="10" fill="#334155">composite unique: (hotel_id, city, check_in_date, check_out_date) — enforced via ON CONFLICT upsert</text>
+    <path d="M 1190 280 L 1190 300" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrowRed)"/>
+    <text x="1210" y="295" font-size="10" fill="#dc2626" font-weight="700">MISS</text>
+    <text x="860" y="300" font-size="9" fill="#b91c1c" font-weight="700"> check_only=True and DB miss → return None here (skips SerpAPI)</text>
+
+    <rect x="840" y="305" width="700" height="55" rx="8" fill="#fae8ff" stroke="#c026d3"/>
+    <text x="1190" y="325" text-anchor="middle" font-size="11.5" font-weight="700" fill="#701a75">3. SerpAPI (google_hotels engine) — last resort</text>
+    <text x="860" y="343" font-size="10" fill="#334155">only reached if check_only=False AND both cache tiers missed</text>
+    <text x="860" y="353" font-size="9.5" fill="#64748b">live_hotels_api.py lines ~105–120</text>
+
+    <path d="M 1190 360 L 1190 380" stroke="#15803d" stroke-width="1.6" marker-end="url(#arrowGreen)"/>
+    <rect x="840" y="385" width="700" height="55" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="1190" y="405" text-anchor="middle" font-size="11" font-weight="700" fill="#14532d">4. Write-back (on SerpAPI success)</text>
+    <text x="860" y="423" font-size="10" fill="#334155">Hotel table upsert FIRST (ON CONFLICT composite key), then Redis _cache_set() SECOND</text>
+
+    <rect x="840" y="450" width="700" height="95" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="1190" y="470" text-anchor="middle" font-size="11" font-weight="700" fill="#14532d">Confirmed: also matches the standard 3-tier waterfall</text>
+    <text x="860" y="488" font-size="9.7" fill="#334155">Redis → Hotel table (Postgres) → SerpAPI, same order/shape as Places/Food</text>
+    <text x="860" y="503" font-size="9.7" fill="#334155">check_only correctly short-circuits after DB miss, before the paid SerpAPI call</text>
+    <text x="860" y="521" font-size="9.7" fill="#334155">same "DB write before Redis write" ordering on cache population</text>
+  </g>
+
+  <!-- ===================== TRANSPORT HEADER ===================== -->
+  <g>
+    <rect x="40" y="585" width="1520" height="70" rx="12" fill="#fef2f2" stroke="#fca5a5" stroke-width="2.5"/>
+    <text x="800" y="613" text-anchor="middle" font-size="16" font-weight="700" fill="#7f1d1d">GET /api/transport — NOT a uniform waterfall: 4 independent per-mode paths, dispatched concurrently by rank_transport()</text>
+    <text x="800" y="635" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b91c1c">⚠ Confirmed: NO Redis layer exists anywhere in the transport path — only Places/Food/Hotels use Redis</text>
+  </g>
+
+  <!-- TRAIN -->
+  <g>
+    <rect x="40" y="670" width="370" height="410" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="225" y="694" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">TRAIN</text>
+    <text x="225" y="710" text-anchor="middle" font-size="9.3" fill="#334155">services/live_trains_api.py::search_live_trains()</text>
+
+    <rect x="55" y="722" width="340" height="70" rx="8" fill="#ffffff" stroke="#f97316"/>
+    <text x="225" y="740" text-anchor="middle" font-size="10.5" font-weight="700" fill="#9a3412">1. GTFS DB tables</text>
+    <text x="65" y="756" font-size="9.3" fill="#334155">TransitTrip / TransitRoute / TransitStopTime</text>
+    <text x="65" y="770" font-size="9.3" fill="#334155">joined lookup for scheduled service</text>
+    <path d="M 225 792 L 225 810" stroke="#1e293b" stroke-width="1.4" marker-end="url(#arrowRed)"/>
+
+    <rect x="55" y="815" width="340" height="70" rx="8" fill="#ffffff" stroke="#f97316"/>
+    <text x="225" y="833" text-anchor="middle" font-size="10.5" font-weight="700" fill="#9a3412">2. Legacy Train table (Postgres)</text>
+    <text x="65" y="850" font-size="9.3" fill="#334155">day-of-week (DOW) pattern cache lookup</text>
+    <text x="65" y="864" font-size="9.3" fill="#334155">composite unique: (train_num, origin, dest, date)</text>
+    <path d="M 225 885 L 225 903" stroke="#1e293b" stroke-width="1.4" marker-end="url(#arrowRed)"/>
+
+    <rect x="55" y="908" width="340" height="55" rx="8" fill="#fae8ff" stroke="#c026d3"/>
+    <text x="225" y="926" text-anchor="middle" font-size="10.5" font-weight="700" fill="#701a75">3. RailRadar live API</text>
+    <text x="65" y="944" font-size="9.3" fill="#334155">last resort; result saved back to Train table</text>
+    <path d="M 225 963 L 225 980" stroke="#15803d" stroke-width="1.4" marker-end="url(#arrowGreen)"/>
+
+    <rect x="55" y="985" width="340" height="35" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="225" y="1007" text-anchor="middle" font-size="9.7" fill="#14532d">write-back → Train table</text>
+
+    <rect x="55" y="1030" width="340" height="42" rx="8" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="225" y="1048" text-anchor="middle" font-size="9.7" font-weight="700" fill="#7f1d1d">check_only=True:</text>
+    <text x="225" y="1062" text-anchor="middle" font-size="9.3" fill="#7f1d1d">hard `return None` — NO cache check at all</text>
+  </g>
+
+  <!-- BUS -->
+  <g>
+    <rect x="420" y="670" width="370" height="410" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="605" y="694" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">BUS</text>
+    <text x="605" y="710" text-anchor="middle" font-size="9.3" fill="#334155">services/live_bus_api.py::search_live_buses()</text>
+
+    <rect x="435" y="722" width="340" height="90" rx="8" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="605" y="742" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7f1d1d">Bus DB-cache path is DEAD CODE</text>
+    <text x="445" y="759" font-size="9.3" fill="#334155">fetch_redbus_api() exists but is NOT in the</text>
+    <text x="445" y="773" font-size="9.3" fill="#334155">active `strategies` list — never invoked</text>
+    <text x="445" y="792" font-size="9" fill="#b91c1c">no Redis, no live DB cache read in practice</text>
+    <path d="M 605 812 L 605 830" stroke="#1e293b" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+    <rect x="435" y="835" width="340" height="90" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+    <text x="605" y="855" text-anchor="middle" font-size="10.5" font-weight="700" fill="#713f12">Only active strategy: scrape_redbus_mobile()</text>
+    <text x="445" y="872" font-size="9.3" fill="#334155">a pure heuristic / math result synthesizer</text>
+    <text x="445" y="886" font-size="9.3" fill="#334155">— no external "Parse.bot" call despite naming,</text>
+    <text x="445" y="900" font-size="9.3" fill="#334155">no DB read, no Redis: fabricates plausible timings</text>
+    <text x="445" y="915" font-size="9" fill="#92400e" font-weight="700">always returns synthesized data</text>
+
+    <rect x="435" y="1030" width="340" height="42" rx="8" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="605" y="1048" text-anchor="middle" font-size="9.7" font-weight="700" fill="#7f1d1d">check_only=True:</text>
+    <text x="605" y="1062" text-anchor="middle" font-size="9.3" fill="#7f1d1d">effectively ignored — strategy never reads it,</text>
+  </g>
+
+  <!-- CAB -->
+  <g>
+    <rect x="800" y="670" width="370" height="410" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="985" y="694" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">CAB</text>
+    <text x="985" y="710" text-anchor="middle" font-size="9.3" fill="#334155">services/osrm_cab_api.py::search_live_cabs()</text>
+
+    <rect x="815" y="722" width="340" height="130" rx="8" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="985" y="745" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7f1d1d">ZERO caching layers</text>
+    <text x="825" y="765" font-size="9.7" fill="#334155">No Redis. No Postgres table lookup.</text>
+    <text x="825" y="782" font-size="9.7" fill="#334155">Every single request calls OSRM (routing)</text>
+    <text x="825" y="798" font-size="9.7" fill="#334155">+ Open-Meteo (geocoding/weather) live —</text>
+    <text x="825" y="815" font-size="9.7" fill="#334155">unconditionally, every time.</text>
+    <text x="825" y="835" font-size="9" fill="#b91c1c" font-weight="700">ranking_engine.py comment: "Cabs never</text>
+    <text x="825" y="847" font-size="9" fill="#b91c1c" font-weight="700">check_only... always return results"</text>
+
+    <path d="M 985 852 L 985 870" stroke="#15803d" stroke-width="1.6" marker-end="url(#arrowGreen)"/>
+    <rect x="815" y="875" width="340" height="55" rx="8" fill="#fae8ff" stroke="#c026d3"/>
+    <text x="985" y="895" text-anchor="middle" font-size="10.5" font-weight="700" fill="#701a75">OSRM + Open-Meteo (always live)</text>
+    <text x="825" y="912" font-size="9.3" fill="#334155">no write-back — nothing to cache to</text>
+
+    <rect x="815" y="1030" width="340" height="42" rx="8" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="985" y="1048" text-anchor="middle" font-size="9.7" font-weight="700" fill="#7f1d1d">check_only: N/A</text>
+    <text x="985" y="1062" text-anchor="middle" font-size="9.3" fill="#7f1d1d">rank_transport() always awaits cab search regardless</text>
+  </g>
+
+  <!-- FLIGHT -->
+  <g>
+    <rect x="1180" y="670" width="370" height="410" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="1365" y="694" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">FLIGHT</text>
+    <text x="1365" y="710" text-anchor="middle" font-size="9.3" fill="#334155">services/live_flights_api.py::_search_live_flights_impl()</text>
+
+    <rect x="1195" y="722" width="340" height="100" rx="8" fill="#ffffff" stroke="#f97316"/>
+    <text x="1365" y="742" text-anchor="middle" font-size="10.5" font-weight="700" fill="#9a3412">1. Flight table (Postgres) — ONLY tier</text>
+    <text x="1205" y="760" font-size="9.3" fill="#334155">_fetch_flights_for_iata / _find_time_expanded_routes</text>
+    <text x="1205" y="775" font-size="9.3" fill="#334155">query static DGCA-sourced schedule data</text>
+    <text x="1205" y="792" font-size="9.3" fill="#334155">composite unique: (flight_no, origin, dest, dep_time, arr_time)</text>
+    <path d="M 1365 822 L 1365 850" stroke="#1e293b" stroke-width="1.4" marker-end="url(#arrowRed)"/>
+    <text x="1385" y="845" font-size="9.7" fill="#dc2626" font-weight="700">MISS</text>
+
+    <rect x="1195" y="855" width="340" height="95" rx="8" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="1365" y="875" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7f1d1d">2. NO external API tier exists</text>
+    <text x="1205" y="892" font-size="9.3" fill="#334155">code comment: "External API Fallback removed</text>
+    <text x="1205" y="906" font-size="9.3" fill="#334155">as per user request"</text>
+    <text x="1205" y="923" font-size="9.3" fill="#334155">on DB miss → returns empty; no write-back</text>
+    <text x="1205" y="938" font-size="9" fill="#b91c1c" font-weight="700">despite the filename, nothing here is "live"</text>
+
+    <rect x="1195" y="1030" width="340" height="42" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="1365" y="1048" text-anchor="middle" font-size="9.7" font-weight="700" fill="#14532d">check_only=True (correct semantics):</text>
+    <text x="1365" y="1062" text-anchor="middle" font-size="9.3" fill="#14532d">queries Flight table first; None only if truly empty</text>
+  </g>
+
+  <!-- ===================== check_only summary ===================== -->
+  <g>
+    <rect x="40" y="1090" width="1520" height="130" rx="12" fill="#ede9fe" stroke="#a78bfa" stroke-width="2"/>
+    <text x="60" y="1113" font-size="14" font-weight="700" fill="#4c1d95">check_only query parameter — api.py: check_only: bool = Query(False), threaded into rank_transport() and each mode fn</text>
+    <text x="60" y="1135" font-size="11" fill="#334155">Purpose (frontend polling flow): let the UI ask "is there already-cached data?" without triggering slow/costly live calls.</text>
+    <text x="60" y="1155" font-size="11" fill="#334155">If rank_transport() returns None for a mode → api.py returns {'{'} "status": "cache_miss" {'}'} for that mode (line ~319–320).</text>
+    <text x="60" y="1177" font-size="11" font-weight="700" fill="#b91c1c">Only FLIGHT implements true "check DB cache, return early" semantics. TRAIN is a no-op stub (always cache_miss). BUS ignores the flag</text>
+    <text x="60" y="1195" font-size="11" font-weight="700" fill="#b91c1c">(its only active strategy always synthesizes data). CAB never receives/respects check_only — it always executes the live call.</text>
+  </g>
+
+  <!-- ===================== LEGEND ===================== -->
+  <g font-size="11.5">
+    <rect x="40" y="1240" width="1520" height="150" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="60" y="1265" font-weight="700" fill="#0f172a" font-size="13">Legend</text>
+    <line x1="60" y1="1285" x2="105" y2="1285" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrowRed)"/>
+    <text x="115" y="1289" fill="#334155">Cache miss → fall through to next tier</text>
+    <line x1="60" y1="1308" x2="105" y2="1308" stroke="#15803d" stroke-width="1.6" marker-end="url(#arrowGreen)"/>
+    <text x="115" y="1312" fill="#334155">Cache miss at final tier → external API call (last resort)</text>
+    <text x="60" y="1335" fill="#334155">Blue = Places/Food (Google Places), Green = Hotels (SerpAPI), Orange = Transport (mixed — no single pattern)</text>
+    <text x="60" y="1355" fill="#334155">Only /api/places, /api/food, /api/hotels follow the "Redis → Postgres cache table → external API" 3-tier waterfall.</text>
+    <text x="60" y="1375" font-weight="700" fill="#b91c1c">/api/transport does NOT — it is 4 structurally different paths (GTFS+legacy DB+live API / dead-code+heuristic / zero-cache / DB-only-no-live) unified only by a shared dispatcher.</text>
+  </g>
+
+  <!-- ===================== SOURCE NOTES ===================== -->
+  <g font-size="11">
+    <rect x="40" y="1410" width="1520" height="220" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="60" y="1435" font-weight="700" fill="#0f172a" font-size="13">Verified source references</text>
+    <text x="60" y="1458" fill="#334155" font-family="monospace" font-size="10.3">api.py — route handlers dispatch to engines/ranking_engine.py: rank_places(), rank_food(), rank_hotels(), rank_transport()</text>
+    <text x="60" y="1478" fill="#334155" font-family="monospace" font-size="10.3">services/google_places_api.py — _search_google_places_impl(): _cache_get/_cache_set (Redis), _db_get/_db_set (PlaceCache), _make_cache_key()</text>
+    <text x="60" y="1498" fill="#334155" font-family="monospace" font-size="10.3">services/live_hotels_api.py — search_live_hotels(): Redis key f"hotels_{'{'}CITY{'}'}_{'{'}check_in{'}'}_{'{'}check_out{'}'}", Hotel table upsert ON CONFLICT</text>
+    <text x="60" y="1518" fill="#334155" font-family="monospace" font-size="10.3">services/live_trains_api.py — search_live_trains(): GTFS tables → Train table DOW cache → RailRadar; check_only returns None unconditionally</text>
+    <text x="60" y="1538" fill="#334155" font-family="monospace" font-size="10.3">services/live_bus_api.py — search_live_buses(): active strategy list = [scrape_redbus_mobile] only; fetch_redbus_api() is unused dead code</text>
+    <text x="60" y="1558" fill="#334155" font-family="monospace" font-size="10.3">services/osrm_cab_api.py — search_live_cabs(): no cache reads/writes of any kind; always calls OSRM + Open-Meteo</text>
+    <text x="60" y="1578" fill="#334155" font-family="monospace" font-size="10.3">services/live_flights_api.py — _search_live_flights_impl(): Flight table only; "External API Fallback removed as per user request"</text>
+    <text x="60" y="1600" fill="#334155" font-family="monospace" font-size="10.3">engines/ranking_engine.py — rank_transport() comment confirms cabs "never check_only... always return results"; dispatches all 4 modes concurrently</text>
+  </g>
+</svg>

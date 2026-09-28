@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <!-- Dark elegant gradient matching PlanBro theme -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b" />
+      <stop offset="100%" stop-color="#27272a" />
+    </linearGradient>
+    <linearGradient id="pinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bgGrad)" />
+  
+  <!-- Subtle Grid Pattern in background -->
+  <g opacity="0.05" stroke="#ffffff" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="500" />
+    <line x1="200" y1="0" x2="200" y2="500" />
+    <line x1="300" y1="0" x2="300" y2="500" />
+    <line x1="400" y1="0" x2="400" y2="500" />
+    <line x1="500" y1="0" x2="500" y2="500" />
+    <line x1="600" y1="0" x2="600" y2="500" />
+    <line x1="700" y1="0" x2="700" y2="500" />
+    <line x1="0" y1="100" x2="800" y2="100" />
+    <line x1="0" y1="200" x2="800" y2="200" />
+    <line x1="0" y1="300" x2="800" y2="300" />
+    <line x1="0" y1="400" x2="800" y2="400" />
+  </g>
+
+  <!-- Landmark/Landscape outline -->
+  <path d="M 150 400 L 280 230 L 380 320 L 530 150 L 680 400 Z" fill="none" stroke="#3f3f46" stroke-width="4" stroke-linejoin="round" opacity="0.4" />
+  <path d="M 250 400 L 380 260 L 480 350 L 580 220 L 650 400 Z" fill="none" stroke="#27272a" stroke-width="3" stroke-linejoin="round" opacity="0.6" />
+
+  <!-- Elegant Location Pin Graphic -->
+  <g transform="translate(400, 210)">
+    <!-- Outer Glow -->
+    <circle cx="0" cy="0" r="45" fill="#3b82f6" opacity="0.15" />
+    <circle cx="0" cy="0" r="30" fill="#3b82f6" opacity="0.2" />
+    <!-- Pin Body -->
+    <path d="M 0 -24 C -13.25 -24 -24 -13.25 -24 0 C -24 18 0 44 0 44 C 0 44 24 18 24 0 C 24 -13.25 13.25 -24 0 -24 Z" fill="url(#pinGrad)" />
+    <!-- Inner Dot -->
+    <circle cx="0" cy="-2" r="8" fill="#ffffff" />
+  </g>
+
+  <!-- Title Text -->
+  <text x="400" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#a1a1aa" text-anchor="middle" letter-spacing="1.5">BREWPLANS</text>
+  <text x="400" y="348" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="400" fill="#71717a" text-anchor="middle" letter-spacing="0.5">Photo from Google Places API unavailable</text>
+</svg>

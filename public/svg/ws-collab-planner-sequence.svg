@@ -1,0 +1,262 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2150" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e293b"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#15803d"/>
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="2150" fill="#f8fafc"/>
+  <text x="800" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a">WebSocket Collaborative Planner — /api/ws/plan/{'{'}plan_id{'}'} (max 15 users)</text>
+  <text x="800" y="54" text-anchor="middle" font-size="12" fill="#64748b">src/app/plan/itinerary/page.tsx (@dnd-kit + itineraryStore.ts) ⇄ api.py ConnectionManager ⇄ other clients in the room</text>
+
+  <!-- ===================== LIFELINES ===================== -->
+  <g font-size="11.5" font-weight="700" fill="#0f172a">
+    <rect x="30"  y="75" width="180" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="120" y="93" text-anchor="middle">Client A (dragger)</text>
+    <text x="120" y="109" text-anchor="middle" font-size="9" font-weight="400" fill="#334155">plan/itinerary/page.tsx</text>
+
+    <rect x="255" y="75" width="180" height="44" rx="8" fill="#e0e7ff" stroke="#818cf8"/>
+    <text x="345" y="93" text-anchor="middle">itineraryStore.ts</text>
+    <text x="345" y="109" text-anchor="middle" font-size="9" font-weight="400" fill="#334155">Zustand (Client A)</text>
+
+    <rect x="480" y="75" width="180" height="44" rx="8" fill="#f3e8ff" stroke="#c084fc"/>
+    <text x="570" y="93" text-anchor="middle">@dnd-kit</text>
+    <text x="570" y="109" text-anchor="middle" font-size="9" font-weight="400" fill="#334155">DndContext sensors</text>
+
+    <rect x="705" y="75" width="200" height="44" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="805" y="93" text-anchor="middle">api.py</text>
+    <text x="805" y="109" text-anchor="middle" font-size="9" font-weight="400" fill="#334155">websocket_endpoint()</text>
+
+    <rect x="930" y="75" width="220" height="44" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+    <text x="1040" y="93" text-anchor="middle">ConnectionManager</text>
+    <text x="1040" y="109" text-anchor="middle" font-size="9" font-weight="400" fill="#334155">active_connections, room_states</text>
+
+    <rect x="1175" y="75" width="180" height="44" rx="8" fill="#e0e7ff" stroke="#818cf8"/>
+    <text x="1265" y="93" text-anchor="middle">itineraryStore.ts</text>
+    <text x="1265" y="109" text-anchor="middle" font-size="9" font-weight="400" fill="#334155">Zustand (Client B)</text>
+
+    <rect x="1400" y="75" width="180" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="1490" y="93" text-anchor="middle">Client B..N</text>
+    <text x="1490" y="109" text-anchor="middle" font-size="9" font-weight="400" fill="#334155">up to 15 total in room</text>
+  </g>
+
+  <g stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,3">
+    <line x1="120" y1="119" x2="120" y2="2090"/>
+    <line x1="345" y1="119" x2="345" y2="2090"/>
+    <line x1="570" y1="119" x2="570" y2="2090"/>
+    <line x1="805" y1="119" x2="805" y2="2090"/>
+    <line x1="1040" y1="119" x2="1040" y2="2090"/>
+    <line x1="1265" y1="119" x2="1265" y2="2090"/>
+    <line x1="1490" y1="119" x2="1490" y2="2090"/>
+  </g>
+
+  <!-- ===================== CONNECTION / JOIN ===================== -->
+  <g>
+    <rect x="60" y="140" width="1500" height="290" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <text x="80" y="163" font-size="13.5" font-weight="700" fill="#1e3a8a">1. Connect &amp; Join Room</text>
+
+    <path d="M 120 180 L 805 180" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="130" y="174">new WebSocket(wsUrl) — wsUrl = ws(s)://.../api/ws/plan/{'{'}planId{'}'}</text>
+
+    <rect x="740" y="192" width="290" height="60" rx="6" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="885" y="210" text-anchor="middle" font-size="11" font-weight="700" fill="#14532d">manager.connect(plan_id, ws)</text>
+    <text x="755" y="226" font-size="9.5" fill="#334155">await websocket.accept()</text>
+    <text x="755" y="240" font-size="9.5" fill="#334155">if room size ≥ MAX_COLLABORATORS (15):</text>
+    <text x="755" y="248" font-size="9" fill="#b91c1c">send {'{'}type:"ERROR", msg:"Room is full (max 15)"{'}'} + close()</text>
+
+    <path d="M 805 260 L 120 260" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="130" y="254" font-size="10.5" fill="#334155">ws.onopen fires → connection accepted</text>
+
+    <path d="M 120 285 L 805 285" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="130" y="279">ws.send({'{'}type:"JOIN", user:{'{'}frontend_id, name: "Anonymous &lt;Animal&gt;", color, picture{'}'}{'}'})</text>
+
+    <rect x="740" y="297" width="290" height="55" rx="6" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="885" y="315" text-anchor="middle" font-size="11" font-weight="700" fill="#14532d">JOIN handler</text>
+    <text x="755" y="331" font-size="9.5" fill="#334155">user_info["id"] = str(id(websocket))</text>
+    <text x="755" y="344" font-size="9.5" fill="#334155">active_connections[plan_id][ws].update(user_info)</text>
+
+    <path d="M 1040 365 L 120 365" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <path d="M 1040 365 L 1265 365" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="200" y="359" font-size="10.5" fill="#334155">broadcast({'{'}type:"PRESENCE", users:[...]{'}'}) to ALL room members (incl. sender via direct send_json)</text>
+
+    <text x="130" y="385" font-size="10" fill="#64748b">filters out own frontend_id from "others"; setActiveUsers([myUser, ...others]), setCollaboratorCount</text>
+
+    <path d="M 1040 405 L 120 405" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrowPurple)" stroke-dasharray="5,3"/>
+    <text x="130" y="399" font-size="10.5" fill="#5b21b6">if plan_id in room_states: send {'{'}type:"SYNC_STATE", state: room_states[plan_id]{'}'} — late joiner catches up</text>
+    <text x="130" y="420" font-size="10" fill="#64748b">→ useItineraryStore.setState(data.state) hydrates the new client instantly</text>
+  </g>
+
+  <!-- ===================== DRAG START ===================== -->
+  <g>
+    <rect x="60" y="450" width="1500" height="240" rx="12" fill="#f3e8ff" stroke="#c084fc" stroke-width="2"/>
+    <text x="80" y="473" font-size="13.5" font-weight="700" fill="#6b21a8">2. Drag Start — @dnd-kit fires DragStartEvent</text>
+
+    <path d="M 570 495 L 120 495" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="130" y="489">User picks up a place card → DndContext onDragStart(event)</text>
+
+    <rect x="70" y="507" width="360" height="75" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="250" y="525" text-anchor="middle" font-size="11" font-weight="700" fill="#1e3a8a">handleDragStart(event)</text>
+    <text x="85" y="542" font-size="9.7" fill="#334155">place = itinerary.selectedPlaces.find(p =&gt; p.id === active.id)</text>
+    <text x="85" y="557" font-size="9.7" fill="#334155">setActivePlace(place)  (local drag-overlay UI state)</text>
+    <text x="85" y="572" font-size="9.7" fill="#334155">if ws.readyState === OPEN → ws.send(DRAG_START)</text>
+
+    <path d="M 120 605 L 805 605" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="130" y="599">ws.send({'{'}type:"DRAG_START", placeId: place.id{'}'})</text>
+
+    <rect x="740" y="617" width="290" height="45" rx="6" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="885" y="635" text-anchor="middle" font-size="10.5" font-weight="700" fill="#14532d">data["userId"] = str(id(ws))</text>
+    <text x="885" y="650" text-anchor="middle" font-size="9.5" fill="#334155">then manager.broadcast(plan_id, data, sender=ws)</text>
+
+    <path d="M 1040 672 L 1265 672" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="1055" y="666" font-size="10" fill="#334155">broadcast to all EXCEPT sender</text>
+  </g>
+
+  <!-- ===================== REMOTE DRAG INDICATOR ===================== -->
+  <g>
+    <rect x="60" y="700" width="1500" height="110" rx="12" fill="#fdf4ff" stroke="#e9a3f9" stroke-width="2"/>
+    <text x="80" y="723" font-size="13.5" font-weight="700" fill="#701a75">3. Other Clients Show Live Drag Indicator</text>
+
+    <rect x="1175" y="737" width="360" height="60" rx="6" fill="#fae8ff" stroke="#c026d3"/>
+    <text x="1355" y="755" text-anchor="middle" font-size="11" font-weight="700" fill="#701a75">ws.onmessage: type === "DRAG_START"</text>
+    <text x="1190" y="772" font-size="9.5" fill="#334155">setRemoteDragStates(prev =&gt; ({'{'}...prev,</text>
+    <text x="1190" y="787" font-size="9.5" fill="#334155">  [data.placeId]: data.user {'}'}))</text>
+
+    <text x="1175" y="812" font-size="10" fill="#64748b">Client B/N re-renders: place card shows "being dragged by ..." badge (no store mutation — pure UI overlay)</text>
+  </g>
+
+  <!-- ===================== DRAG END / DROP ===================== -->
+  <g>
+    <rect x="60" y="820" width="1500" height="230" rx="12" fill="#f3e8ff" stroke="#c084fc" stroke-width="2"/>
+    <text x="80" y="843" font-size="13.5" font-weight="700" fill="#6b21a8">4. Drag End — reorder committed to local Zustand state</text>
+
+    <path d="M 570 865 L 120 865" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="130" y="859">User drops on target day/index → DndContext onDragEnd(event)</text>
+
+    <rect x="70" y="877" width="410" height="95" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="275" y="895" text-anchor="middle" font-size="11" font-weight="700" fill="#1e3a8a">handleDragEnd(event)</text>
+    <text x="85" y="912" font-size="9.7" fill="#334155">resolves source/dest day via findContainerDay(id)</text>
+    <text x="85" y="927" font-size="9.7" fill="#334155">calls itinerary store mutators (e.g. movePlace/reorder)</text>
+    <text x="85" y="942" font-size="9.7" fill="#334155">to update days[].placeIds ordering</text>
+    <text x="85" y="960" font-size="9.7" font-weight="700" fill="#1e3a8a">ws.send({'{'}type:"DRAG_END", placeId: active.id{'}'})</text>
+
+    <path d="M 345 995 L 250 995" stroke="#7c3aed" stroke-width="1.6" marker-end="url(#arrowPurple)"/>
+    <text x="90" y="989" font-size="10" fill="#5b21b6">store mutation triggers useItineraryStore.subscribe() listener</text>
+
+    <path d="M 120 1015 L 805 1015" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="130" y="1009">ws.send({'{'}type:"DRAG_END", placeId{'}'})  +  separately: ws.send({'{'}type:"SYNC_STATE", state{'}'})</text>
+
+    <rect x="740" y="1027" width="290" height="45" rx="6" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="885" y="1045" text-anchor="middle" font-size="10.5" font-weight="700" fill="#14532d">DRAG_END / SYNC_STATE handler</text>
+    <text x="885" y="1060" text-anchor="middle" font-size="9.3" fill="#334155">SYNC_STATE → room_states[plan_id] = data.state (cached)</text>
+  </g>
+
+  <!-- ===================== SUBSCRIBE / BROADCAST STATE ===================== -->
+  <g>
+    <rect x="60" y="1060" width="1500" height="220" rx="12" fill="#e0e7ff" stroke="#818cf8" stroke-width="2"/>
+    <text x="80" y="1083" font-size="13.5" font-weight="700" fill="#3730a3">5. State Sync Broadcast — useItineraryStore.subscribe()</text>
+
+    <rect x="70" y="1097" width="410" height="90" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="275" y="1116" text-anchor="middle" font-size="11" font-weight="700" fill="#3730a3">subscribe callback (mounted once)</text>
+    <text x="85" y="1133" font-size="9.5" fill="#334155">useItineraryStore.subscribe((state) =&gt; {'{'}</text>
+    <text x="95" y="1147" font-size="9.3" fill="#334155">  if (isRemoteUpdate.current) return; // skip echo</text>
+    <text x="95" y="1161" font-size="9.3" fill="#334155">  if (ws.readyState === OPEN)</text>
+    <text x="95" y="1174" font-size="9.3" fill="#334155">    ws.send({'{'}type:"SYNC_STATE", state{'}'}) {'}'})</text>
+
+    <path d="M 805 1200 L 1040 1200" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <path d="M 1040 1220 L 1265 1220" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <path d="M 1040 1220 L 1490 1220" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="820" y="1194">manager.broadcast(plan_id, data, sender=ws) — fan-out to room</text>
+    <text x="1055" y="1214" font-size="10" fill="#334155">send_json(message) per connection (except sender)</text>
+
+    <rect x="1175" y="1232" width="360" height="40" rx="6" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="1355" y="1257" text-anchor="middle" font-size="9.7" fill="#7f1d1d">send wrapped in try/except: pass — a dead socket is silently skipped (not removed until its own disconnect fires)</text>
+  </g>
+
+  <!-- ===================== REMOTE APPLY / RE-RENDER ===================== -->
+  <g>
+    <rect x="60" y="1290" width="1500" height="230" rx="12" fill="#e0e7ff" stroke="#818cf8" stroke-width="2"/>
+    <text x="80" y="1313" font-size="13.5" font-weight="700" fill="#3730a3">6. Remote Clients Apply State — itineraryStore syncs, UI re-renders</text>
+
+    <rect x="1175" y="1327" width="360" height="130" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="1355" y="1347" text-anchor="middle" font-size="11" font-weight="700" fill="#3730a3">ws.onmessage: type === "SYNC_STATE"</text>
+    <text x="1190" y="1365" font-size="9.5" fill="#334155">isRemoteUpdate.current = true</text>
+    <text x="1190" y="1380" font-size="9.5" fill="#334155">syncReceived.current = true</text>
+    <text x="1190" y="1397" font-size="9.5" font-weight="700" fill="#1e3a8a">useItineraryStore.setState(data.state)</text>
+    <text x="1190" y="1414" font-size="9.5" fill="#334155">setTimeout(() =&gt; isRemoteUpdate.current = false, 100)</text>
+    <text x="1190" y="1431" font-size="9.3" fill="#64748b">— 100ms guard prevents this applied state</text>
+    <text x="1190" y="1444" font-size="9.3" fill="#64748b">  from re-triggering its own subscribe() broadcast</text>
+
+    <path d="M 1265 1460 L 1265 1490" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <rect x="1090" y="1495" width="350" height="0" fill="none"/>
+
+    <rect x="1090" y="1495" width="350" height="50" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="1265" y="1514" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1e3a8a">Zustand re-render</text>
+    <text x="1265" y="1530" text-anchor="middle" font-size="9.3" fill="#334155">days[], selectedPlaces, totals recompute → itinerary board re-renders (drag-drop columns, day cards, cost totals) with the new order</text>
+  </g>
+
+  <!-- ===================== DISCONNECT ===================== -->
+  <g>
+    <rect x="60" y="1535" width="1500" height="150" rx="12" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+    <text x="80" y="1558" font-size="13.5" font-weight="700" fill="#7f1d1d">7. Disconnect (any client)</text>
+
+    <path d="M 120 1580 L 805 1580" stroke="#dc2626" stroke-width="1.8" marker-end="url(#arrowRed)" stroke-dasharray="6,4"/>
+    <text x="130" y="1574" fill="#7f1d1d">WebSocketDisconnect raised (tab close, network drop, unmount cleanup: ws.close())</text>
+
+    <rect x="740" y="1592" width="290" height="70" rx="6" fill="#ffffff" stroke="#ef4444"/>
+    <text x="885" y="1610" text-anchor="middle" font-size="11" font-weight="700" fill="#7f1d1d">except WebSocketDisconnect:</text>
+    <text x="755" y="1626" font-size="9.5" fill="#334155">manager.disconnect(plan_id, ws)</text>
+    <text x="755" y="1640" font-size="9.5" fill="#334155">del active_connections[plan_id][ws]</text>
+    <text x="755" y="1654" font-size="9.5" fill="#334155">if room empty → delete room entirely</text>
+
+    <path d="M 1040 1665 L 1265 1665" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <path d="M 1040 1665 L 1490 1665" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="1055" y="1659" font-size="10" fill="#334155">if users remain → broadcast updated {'{'}type:"PRESENCE", users{'}'}</text>
+  </g>
+
+  <!-- ===================== KEY INVARIANTS ===================== -->
+  <g font-size="11">
+    <rect x="60" y="1710" width="1500" height="240" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="80" y="1735" font-weight="700" fill="#0f172a" font-size="14">Key invariants (confirmed in code)</text>
+    <text x="80" y="1760" fill="#334155">• Room capacity: ConnectionManager.MAX_COLLABORATORS = 15 — the 16th connect attempt gets {'{'}type:"ERROR", message:"Room is full (max 15)"{'}'} then the socket is closed.</text>
+    <text x="80" y="1780" fill="#334155">• Server holds NO persistent DB state for room contents — room_states is an in-memory dict keyed by plan_id, lost on server restart; it exists purely to hydrate late joiners.</text>
+    <text x="80" y="1800" fill="#334155">• broadcast() always excludes the sender (sender=websocket param) — the origin client never receives its own SYNC_STATE/DRAG_START/DRAG_END echoed back.</text>
+    <text x="80" y="1820" fill="#334155">• Echo-loop prevention is client-side: isRemoteUpdate.current flag + 100ms setTimeout window blocks the subscribe() callback from re-broadcasting a just-applied remote SYNC_STATE.</text>
+    <text x="80" y="1840" fill="#334155">• DRAG_START/DRAG_END are ephemeral presence signals (who is dragging what) — they do NOT mutate itineraryStore directly; only SYNC_STATE payloads call useItineraryStore.setState().</text>
+    <text x="80" y="1860" fill="#334155">• JOIN messages carry a client-generated frontend_id (persisted across reconnects) plus a randomly assigned "Anonymous &lt;Animal&gt;" display name and color for anonymous collaborators.</text>
+    <text x="80" y="1880" fill="#334155">• A guest opening a shared link with an empty local trip store is protected: itinerary.initializeDays() is skipped if syncReceived.current is true, so SYNC_STATE isn't clobbered by a blank local init.</text>
+    <text x="80" y="1900" fill="#334155">• send_json calls to dead sockets are wrapped in try/except: pass — a stale connection is silently ignored rather than crashing the broadcast loop for other members.</text>
+    <text x="80" y="1920" fill="#334155">• dev vs prod WS host resolution: ws://localhost:8002/api/ws/plan/{'{'}id{'}'} in NODE_ENV=development, else NEXT_PUBLIC_WS_URL (Render backend) or same-origin wss:// fallback.</text>
+  </g>
+
+  <!-- ===================== LEGEND ===================== -->
+  <g font-size="11">
+    <text x="60" y="1975" font-weight="700" fill="#0f172a">Legend:</text>
+    <line x1="140" y1="1970" x2="185" y2="1970" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="195" y="1974" fill="#334155">Client → Server message</text>
+    <line x1="380" y1="1970" x2="425" y2="1970" stroke="#0369a1" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="435" y="1974" fill="#334155">Server → Client broadcast</text>
+    <line x1="650" y1="1970" x2="695" y2="1970" stroke="#7c3aed" stroke-width="1.6" marker-end="url(#arrowPurple)" stroke-dasharray="5,3"/>
+    <text x="705" y="1974" fill="#334155">Store mutation / late-join state hydration</text>
+    <line x1="1020" y1="1970" x2="1065" y2="1970" stroke="#dc2626" stroke-width="1.8" marker-end="url(#arrowRed)" stroke-dasharray="6,4"/>
+    <text x="1075" y="1974" fill="#334155">Disconnect / error</text>
+  </g>
+
+  <g font-size="11">
+    <rect x="60" y="1995" width="1500" height="130" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="80" y="2018" font-weight="700" fill="#0f172a" font-size="12.5">Message type summary (as literally sent over the socket)</text>
+    <text x="80" y="2040" fill="#334155" font-family="monospace" font-size="10.5">JOIN          {'{'} user: {'{'} frontend_id, name, color, picture {'}'} {'}'}          — sent on connect, and again whenever local user identity changes</text>
+    <text x="80" y="2058" fill="#334155" font-family="monospace" font-size="10.5">PRESENCE      {'{'} users: [...] {'}'}                                        — server-computed roster, sent after JOIN and after disconnect</text>
+    <text x="80" y="2076" fill="#334155" font-family="monospace" font-size="10.5">SYNC_STATE    {'{'} state: &lt;full itineraryStore snapshot&gt; {'}'}               — sent on every non-remote store mutation; cached server-side per room</text>
+    <text x="80" y="2094" fill="#334155" font-family="monospace" font-size="10.5">DRAG_START / DRAG_END   {'{'} placeId, userId (server-injected) {'}'}          — ephemeral, drives the "being dragged by ..." UI badge only</text>
+    <text x="80" y="2112" fill="#334155" font-family="monospace" font-size="10.5">ERROR         {'{'} message: "Room is full (max 15)" {'}'}                    — sent once, immediately followed by websocket.close()</text>
+  </g>
+</svg>

@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1700" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1500" height="1700" fill="#f8fafc"/>
+  <text x="750" y="40" text-anchor="middle" font-size="26" font-weight="700" fill="#0f172a">PlanBro — System Architecture</text>
+
+  <!-- FRONTEND LAYER -->
+  <g>
+    <rect x="40" y="70" width="1420" height="290" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <text x="60" y="98" font-size="17" font-weight="700" fill="#1e3a8a">Frontend — Next.js 16 App Router (Vercel)</text>
+
+    <!-- routes -->
+    <g font-size="12.5">
+      <rect x="60" y="115" width="220" height="90" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+      <text x="170" y="135" text-anchor="middle" font-weight="600" fill="#1e3a8a">/plan</text>
+      <text x="170" y="152" text-anchor="middle" fill="#334155">setup / itinerary / places /</text>
+      <text x="170" y="167" text-anchor="middle" fill="#334155">hotels / transport / food /</text>
+      <text x="170" y="182" text-anchor="middle" fill="#334155">review</text>
+      <text x="170" y="198" text-anchor="middle" fill="#64748b" font-size="10.5">multi-step trip planner</text>
+
+      <rect x="300" y="115" width="220" height="90" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+      <text x="410" y="135" text-anchor="middle" font-weight="600" fill="#1e3a8a">/recommend</text>
+      <text x="410" y="155" text-anchor="middle" fill="#334155">preference-based trip</text>
+      <text x="410" y="170" text-anchor="middle" fill="#334155">recommender</text>
+      <text x="410" y="188" text-anchor="middle" fill="#64748b" font-size="10.5">(mountains/beaches/heritage)</text>
+
+      <rect x="540" y="115" width="220" height="90" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+      <text x="650" y="135" text-anchor="middle" font-weight="600" fill="#1e3a8a">/quick-trip</text>
+      <text x="650" y="155" text-anchor="middle" fill="#334155">single-page rapid builder</text>
+      <text x="650" y="170" text-anchor="middle" fill="#334155">drag-and-drop stops,</text>
+      <text x="650" y="185" text-anchor="middle" fill="#334155">map + autocomplete</text>
+
+      <rect x="780" y="115" width="220" height="90" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+      <text x="890" y="135" text-anchor="middle" font-weight="600" fill="#1e3a8a">/blog</text>
+      <text x="890" y="155" text-anchor="middle" fill="#334155">write / u / media /</text>
+      <text x="890" y="170" text-anchor="middle" fill="#334155">guidelines</text>
+      <text x="890" y="188" text-anchor="middle" fill="#64748b" font-size="10.5">editorial blog listing</text>
+    </g>
+
+    <!-- Zustand stores -->
+    <rect x="1040" y="115" width="400" height="205" rx="10" fill="#e0e7ff" stroke="#818cf8" stroke-width="1.5"/>
+    <text x="1240" y="135" text-anchor="middle" font-size="13.5" font-weight="700" fill="#3730a3">Zustand Client Stores</text>
+    <g font-size="11.5" fill="#334155">
+      <rect x="1055" y="145" width="175" height="42" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+      <text x="1142" y="162" text-anchor="middle" font-weight="600">authStore</text>
+      <text x="1142" y="177" text-anchor="middle" font-size="10">user, isLoading</text>
+
+      <rect x="1245" y="145" width="175" height="42" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+      <text x="1332" y="162" text-anchor="middle" font-weight="600">itineraryStore</text>
+      <text x="1332" y="177" text-anchor="middle" font-size="10">days, selectedPlaces</text>
+
+      <rect x="1055" y="195" width="175" height="42" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+      <text x="1142" y="212" text-anchor="middle" font-weight="600">tripStore</text>
+      <text x="1142" y="227" text-anchor="middle" font-size="10">source/dest, dates, mode</text>
+
+      <rect x="1245" y="195" width="175" height="42" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+      <text x="1332" y="212" text-anchor="middle" font-weight="600">budgetStore</text>
+      <text x="1332" y="227" text-anchor="middle" font-size="10">totalBudget, per-category</text>
+
+      <text x="1240" y="258" text-anchor="middle" font-size="10.5" fill="#64748b">+ cacheStore, fetchQueueStore, ledgerStore</text>
+      <text x="1240" y="278" text-anchor="middle" font-size="10.5" fill="#64748b">persisted via custom dbStorage</text>
+    </g>
+
+    <!-- Next.js API routes -->
+    <rect x="60" y="230" width="940" height="115" rx="10" fill="#fef9c3" stroke="#eab308" stroke-width="1.5"/>
+    <text x="80" y="250" font-size="13.5" font-weight="700" fill="#713f12">Next.js API Routes — src/app/api/*</text>
+
+    <rect x="80" y="260" width="290" height="72" rx="8" fill="#fef08a" stroke="#ca8a04"/>
+    <text x="225" y="280" text-anchor="middle" font-weight="700" font-size="12.5" fill="#713f12">/api/blogs/*</text>
+    <text x="225" y="297" text-anchor="middle" font-size="11" fill="#334155">prisma.article.findMany /</text>
+    <text x="225" y="312" text-anchor="middle" font-size="11" fill="#334155">create / updateMany</text>
+    <text x="225" y="326" text-anchor="middle" font-size="10" fill="#b91c1c" font-weight="600">→ Prisma DIRECT (bypasses FastAPI)</text>
+
+    <rect x="385" y="260" width="290" height="72" rx="8" fill="#fef08a" stroke="#ca8a04"/>
+    <text x="530" y="280" text-anchor="middle" font-weight="700" font-size="12.5" fill="#713f12">/api/auth, admin, trips,</text>
+    <text x="530" y="295" text-anchor="middle" font-weight="700" font-size="12.5" fill="#713f12">ola/*, state, passengers</text>
+    <text x="530" y="313" text-anchor="middle" font-size="10.5" fill="#334155">session/rate-limit checks</text>
+    <text x="530" y="326" text-anchor="middle" font-size="10" fill="#b91c1c" font-weight="600">→ Prisma DIRECT</text>
+
+    <rect x="690" y="260" width="290" height="72" rx="8" fill="#bbf7d0" stroke="#16a34a"/>
+    <text x="835" y="280" text-anchor="middle" font-weight="700" font-size="12.5" fill="#14532d">/api/places, hotels, food,</text>
+    <text x="835" y="295" text-anchor="middle" font-weight="700" font-size="12.5" fill="#14532d">recommendations, transport,</text>
+    <text x="835" y="310" text-anchor="middle" font-weight="700" font-size="12.5" fill="#14532d">route-matrix, search-city</text>
+    <text x="835" y="326" text-anchor="middle" font-size="10" fill="#166534" font-weight="600">→ Prisma (auth/rate-limit) then proxy FastAPI</text>
+  </g>
+
+  <!-- arrow frontend -> API routes (internal, already shown as grouped) -->
+
+  <!-- FASTAPI LAYER -->
+  <g>
+    <rect x="40" y="400" width="1420" height="330" rx="14" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+    <text x="60" y="428" font-size="17" font-weight="700" fill="#14532d">FastAPI Backend (Render) — entry point api.py (uvicorn api:app)</text>
+    <text x="60" y="446" font-size="11" fill="#166534">Endpoints: /optimize_itinerary, /route-matrix, /transport, /trains/{'{n}'}/route, /trains/{'{n}'}/live, /stations/{'{code}'}/board,</text>
+    <text x="60" y="461" font-size="11" fill="#166534">/cross_transport, /places, /food, /places/reviews, /hotels, /recommendations, /search-city, /ola-search, /overpass-search, /ws/plan/{'{id}'}</text>
+
+    <rect x="60" y="480" width="430" height="220" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="275" y="502" text-anchor="middle" font-size="13.5" font-weight="700" fill="#14532d">services/</text>
+    <g font-size="11" fill="#334155">
+      <text x="80" y="522">• geo_service.py</text>
+      <text x="80" y="540">• cache_logger.py  (Redis cache + logging)</text>
+      <text x="80" y="558">• routing_engine.py  (OSRM)</text>
+      <text x="80" y="576">• live_trains_api.py  (RailRadar, OSRM, Open-Meteo)</text>
+      <text x="80" y="594">• live_bus_api.py  (Parse.bot)</text>
+      <text x="80" y="612">• live_hotels_api.py  (SerpAPI, Redis cache)</text>
+      <text x="80" y="630">• osrm_cab_api.py  (OSRM, Open-Meteo)</text>
+      <text x="80" y="648">• live_flights_api.py  (OSRM)</text>
+      <text x="80" y="666">• weather_service.py  (Open-Meteo)</text>
+      <text x="80" y="684">• google_places_api.py  (Google Places, Redis)</text>
+    </g>
+
+    <rect x="510" y="480" width="290" height="105" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="655" y="502" text-anchor="middle" font-size="13.5" font-weight="700" fill="#14532d">engines/</text>
+    <g font-size="11" fill="#334155">
+      <text x="530" y="522">• ranking_engine.py</text>
+      <text x="530" y="540">  (uses Google Places)</text>
+      <text x="530" y="560">• ollama_engine.py</text>
+      <text x="530" y="578">  (calls Groq API: openai/gpt-oss-120b,</text>
+      <text x="530" y="594">  key rotation via GROQ_API_KEY_N)</text>
+    </g>
+
+    <rect x="510" y="600" width="290" height="100" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="655" y="622" text-anchor="middle" font-size="13.5" font-weight="700" fill="#14532d">models/</text>
+    <g font-size="11" fill="#334155">
+      <text x="530" y="644">• entities.py</text>
+      <text x="530" y="662">• state.py</text>
+      <text x="530" y="680">• enums.py</text>
+    </g>
+
+    <rect x="820" y="480" width="260" height="220" rx="10" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="950" y="502" text-anchor="middle" font-size="12.5" font-weight="700" fill="#065f46">Called directly in api.py</text>
+    <g font-size="11" fill="#334155">
+      <text x="840" y="524">• Ola Maps</text>
+      <text x="840" y="540">  (api.olamaps.io</text>
+      <text x="840" y="556">  /places/v1/autocomplete)</text>
+      <text x="840" y="580">• Open-Meteo</text>
+      <text x="840" y="596">  (weather lookups)</text>
+      <text x="840" y="620">• WebSocket</text>
+      <text x="840" y="636">  /ws/plan/{'{plan_id}'}</text>
+      <text x="840" y="652">  (live collab)</text>
+    </g>
+  </g>
+
+  <!-- EXTERNAL APIS -->
+  <g>
+    <rect x="1120" y="400" width="340" height="330" rx="14" fill="#fdf4ff" stroke="#e9a3f9" stroke-width="2"/>
+    <text x="1140" y="428" font-size="15" font-weight="700" fill="#701a75">External APIs</text>
+    <g font-size="11.5" fill="#334155">
+      <rect x="1140" y="440" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="458" text-anchor="middle">Google Places</text>
+
+      <rect x="1140" y="472" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="490" text-anchor="middle">Groq — openai/gpt-oss-120b</text>
+
+      <rect x="1140" y="504" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="522" text-anchor="middle">SerpAPI (hotels)</text>
+
+      <rect x="1140" y="536" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="554" text-anchor="middle">RailRadar (trains)</text>
+
+      <rect x="1140" y="568" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="586" text-anchor="middle">Parse.bot (buses)</text>
+
+      <rect x="1140" y="600" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="618" text-anchor="middle">OSRM (routing / cabs)</text>
+
+      <rect x="1140" y="632" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="650" text-anchor="middle">Ola Maps</text>
+
+      <rect x="1140" y="664" width="300" height="26" rx="6" fill="#fae8ff" stroke="#d8b4fe"/>
+      <text x="1290" y="682" text-anchor="middle">Open-Meteo (weather)</text>
+    </g>
+  </g>
+
+  <!-- DATA LAYER -->
+  <g>
+    <rect x="40" y="1090" width="1420" height="170" rx="14" fill="#fff1f2" stroke="#fda4af" stroke-width="2"/>
+    <text x="60" y="1118" font-size="17" font-weight="700" fill="#881337">Data Layer</text>
+
+    <rect x="60" y="1135" width="480" height="105" rx="10" fill="#ffe4e6" stroke="#fb7185" stroke-width="1.5"/>
+    <text x="300" y="1160" text-anchor="middle" font-size="14" font-weight="700" fill="#881337">PostgreSQL (NeonDB)</text>
+    <text x="300" y="1180" text-anchor="middle" font-size="11.5" fill="#334155">accessed via Prisma ORM</text>
+    <text x="300" y="1198" text-anchor="middle" font-size="11" fill="#334155">prisma/schema.prisma — provider = "postgresql"</text>
+    <text x="300" y="1215" text-anchor="middle" font-size="11" fill="#334155">DATABASE_URL env var</text>
+
+    <rect x="580" y="1135" width="480" height="105" rx="10" fill="#ffe4e6" stroke="#fb7185" stroke-width="1.5"/>
+    <text x="820" y="1160" text-anchor="middle" font-size="14" font-weight="700" fill="#881337">Upstash Redis</text>
+    <text x="820" y="1180" text-anchor="middle" font-size="11.5" fill="#334155">src/lib/redis.ts + rateLimit.ts</text>
+    <text x="820" y="1198" text-anchor="middle" font-size="11" fill="#334155">IP rate limiting, response caching</text>
+    <text x="820" y="1215" text-anchor="middle" font-size="11" fill="#334155">(destination-photo, ola/*, cache_logger.py, etc.)</text>
+  </g>
+
+  <!-- DEPLOYMENT -->
+  <g>
+    <rect x="40" y="1290" width="1420" height="110" rx="14" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="60" y="1318" font-size="17" font-weight="700" fill="#1e293b">Deployment</text>
+
+    <rect x="60" y="1330" width="680" height="55" rx="10" fill="#e2e8f0" stroke="#64748b"/>
+    <text x="400" y="1352" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Vercel</text>
+    <text x="400" y="1370" text-anchor="middle" font-size="11" fill="#334155">Next.js frontend + API routes (.vercel/, standard next build)</text>
+
+    <rect x="760" y="1330" width="680" height="55" rx="10" fill="#e2e8f0" stroke="#64748b"/>
+    <text x="1100" y="1352" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Render</text>
+    <text x="1100" y="1370" text-anchor="middle" font-size="11" fill="#334155">FastAPI backend — render.yaml, service "planbro-backend", uvicorn api:app</text>
+  </g>
+
+  <!-- LEGEND -->
+  <g font-size="11.5">
+    <text x="60" y="1440" font-weight="700" fill="#0f172a">Legend:</text>
+    <line x1="140" y1="1436" x2="185" y2="1436" stroke="#dc2626" stroke-width="3" marker-end="url(#arrowRed)"/>
+    <text x="195" y="1440" fill="#334155">Next.js → Prisma DIRECT (blog + auth/admin/trips path — bypasses FastAPI)</text>
+
+    <line x1="140" y1="1462" x2="185" y2="1462" stroke="#2563eb" stroke-width="3" marker-end="url(#arrowBlue)"/>
+    <text x="195" y="1466" fill="#334155">Next.js → FastAPI → DB/external APIs (places, hotels, food, recommendations, transport, etc.)</text>
+
+    <line x1="140" y1="1488" x2="185" y2="1488" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="195" y="1492" fill="#334155">Standard data flow / call</text>
+  </g>
+
+  <!-- ARROWS: Frontend -> API routes (grouped visually, one arrow suffices) -->
+  <path d="M 170 205 L 170 230" stroke="#334155" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 410 205 L 700 260" stroke="#334155" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 650 205 L 750 260" stroke="#334155" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 890 205 L 300 260" stroke="#334155" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- ARROW: /api/blogs -> Prisma DB (red, direct, long bypass line) -->
+  <path d="M 225 332 C 225 900, 260 1050, 280 1135" stroke="#dc2626" stroke-width="3" fill="none" marker-end="url(#arrowRed)"/>
+  <text x="235" y="900" font-size="11" fill="#b91c1c" font-weight="600" transform="rotate(90 235 900)">blogs → Prisma direct</text>
+
+  <!-- ARROW: /api/auth,admin,trips etc -> Prisma DB (red, direct) -->
+  <path d="M 530 332 C 530 900, 400 1050, 340 1135" stroke="#dc2626" stroke-width="3" fill="none" marker-end="url(#arrowRed)"/>
+
+  <!-- ARROW: /api/places,hotels,... -> Prisma (auth check, red short) then -> FastAPI (blue) -->
+  <path d="M 835 332 C 835 700, 750 900, 620 1135" stroke="#dc2626" stroke-width="2.5" fill="none" stroke-dasharray="6,4" marker-end="url(#arrowRed)"/>
+  <text x="760" y="820" font-size="10.5" fill="#b91c1c" font-weight="600">auth/rate-limit check</text>
+
+  <path d="M 835 332 L 835 400" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arrowBlue)"/>
+
+  <!-- ARROW: FastAPI -> External APIs -->
+  <path d="M 1080 550 L 1120 550" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrowBlue)"/>
+
+  <!-- ARROW: FastAPI services -> Redis/Postgres (data layer) -->
+  <path d="M 275 700 C 275 950, 400 1050, 560 1135" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="330" y="960" font-size="10.5" fill="#1d4ed8" font-weight="600">cache_logger, google_places_api</text>
+
+  <path d="M 275 700 C 275 1000, 700 1150, 820 1135" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arrowBlue)" stroke-dasharray="0"/>
+
+  <!-- Deployment relation lines -->
+  <path d="M 400 1330 L 400 1240" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1100 1330 L 900 730" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)" stroke-dasharray="5,4"/>
+</svg>

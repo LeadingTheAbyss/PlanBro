@@ -1,0 +1,377 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AppState {
+  id        String   @id @default(cuid())
+  storeName String   @unique
+  stateJson String // JSON serialized string of the Zustand state
+  updatedAt DateTime @updatedAt
+}
+
+model PnrCache {
+  id        String   @id @default(cuid())
+  pnrNumber String   @unique
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+model Flight {
+  id        String   @id @default(cuid())
+  flight_no String
+  origin    String
+  dest      String
+  airline   String
+  freq      String
+  dep_time  String
+  arr_time  String
+  
+  @@unique([flight_no, origin, dest, dep_time, arr_time])
+}
+
+model Bus {
+  id        String   @id @default(cuid())
+  origin    String
+  dest      String
+  date      String
+  bus_name  String
+  timings   String
+  price     Float
+  
+  @@unique([origin, dest, date, bus_name, timings])
+}
+
+model Train {
+  id             String   @id @default(cuid())
+  train_num      String
+  train_name     String
+  origin         String
+  dest           String
+  date           String
+  dep_time       String
+  arr_time       String
+  duration_hours Float
+  price          Float
+  
+  @@unique([train_num, origin, dest, date])
+}
+
+model Hotel {
+  id              String   @id @default(cuid())
+  hotel_id        String
+  city            String
+  check_in_date   String
+  check_out_date  String
+  name            String
+  price           Float
+  rating          Float
+  lat             Float
+  lon             Float
+  image_url       String?
+  
+  @@unique([hotel_id, city, check_in_date, check_out_date])
+}
+
+model User {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  name            String
+  picture         String?
+  username        String?       @unique
+  passwordHash    String?
+  authProvider    String        @default("google")
+  apiCalls        Int           @default(0)
+  apiCallsFlights Int           @default(0)
+  apiCallsTrains  Int           @default(0)
+  apiCallsBusses  Int           @default(0)
+  apiCallsHotels  Int           @default(0)
+  apiCallsPlaces  Int           @default(0)
+  apiCallsRecommendations Int   @default(0)
+  lastApiCallDate DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  sessions        Session[]
+  tripHistories   TripHistory[]
+  savedPassengers SavedPassenger[]
+  dailyStats      DailyUserStat[]
+  feedbacks       Feedback[]
+  tripAttempts    TripAttempt[]
+}
+
+model DailyUserStat {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        String   // YYYY-MM-DD
+  loginCount  Int      @default(0)
+  apiCalls    Int      @default(0)
+  apiCallsRecommendations Int @default(0)
+  apiCallsTrains      Int @default(0)
+  apiCallsBuses       Int @default(0)
+  apiCallsPlaces      Int @default(0)
+  apiCallsImages      Int @default(0)
+  apiCallsReviews     Int @default(0)
+  apiCallsETA         Int @default(0)
+  apiCallsAutocomplete Int @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([userId, date])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model TransitStop {
+  stop_id        String  @id
+  stop_name      String
+  lat            Float
+  lon            Float
+  transport_type String  // "TRAIN" or "BUS"
+  
+  stopTimes TransitStopTime[]
+}
+
+model TransitRoute {
+  route_id   String  @id
+  short_name String
+  long_name  String
+  agency_id  String?
+  
+  trips TransitTrip[]
+}
+
+model TransitCalendar {
+  service_id String  @id
+  monday     Boolean
+  tuesday    Boolean
+  wednesday  Boolean
+  thursday   Boolean
+  friday     Boolean
+  saturday   Boolean
+  sunday     Boolean
+
+  trips TransitTrip[]
+}
+
+model TransitTrip {
+  trip_id    String  @id
+  route_id   String
+  service_id String
+  
+  route    TransitRoute    @relation(fields: [route_id], references: [route_id], onDelete: Cascade)
+  calendar TransitCalendar @relation(fields: [service_id], references: [service_id], onDelete: Cascade)
+  
+  stopTimes TransitStopTime[]
+}
+
+model TransitStopTime {
+  trip_id        String
+  stop_id        String
+  arrival_time   String
+  departure_time String
+  stop_sequence  Int
+  day_offset     Int
+  
+  trip TransitTrip @relation(fields: [trip_id], references: [trip_id], onDelete: Cascade)
+  stop TransitStop @relation(fields: [stop_id], references: [stop_id], onDelete: Cascade)
+  
+  @@id([trip_id, stop_sequence])
+  @@index([stop_id])
+}
+
+model TripHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination String
+  snapshot    Json
+  createdAt   DateTime @default(now())
+}
+
+model SavedPassenger {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  age       Int
+  gender    String
+  city      String?
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, name])
+}
+
+// Persistent cache for Google Places API responses
+// Stores raw JSON from searchText so we never need to re-fetch unless TTL expires
+model PlaceCache {
+  id         String   @id @default(cuid())
+  cacheKey   String   @unique  // e.g. "places_v5_lucknow_tourist_30"
+  data       Json
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Stores resolved places/landmarks to reduce external API dependency
+model Landmark {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  city        String?
+  lat         Float
+  lng         Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // e.g. "LOGIN", "ROLE_CHANGE", "TRIP_DELETED", "SUSPICIOUS_ACTIVITY"
+  details   String?  // JSON string or text description
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model TelemetryLog {
+  id           String   @id @default(cuid())
+  endpoint     String   // e.g. "/api/transport", "Ollama", "GooglePlaces"
+  status       String   // "SUCCESS", "ERROR", "CACHE_HIT"
+  durationMs   Int?
+  errorMessage String?
+  costEstimate Float    @default(0.0)
+  createdAt    DateTime @default(now())
+
+  @@index([endpoint])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model DailySystemStat {
+  id                 String   @id @default(cuid())
+  date               String   @unique // YYYY-MM-DD
+  activeUsers        Int      @default(0)
+  newSignups         Int      @default(0)
+  tripsPlanned       Int      @default(0)
+  tripsCompleted     Int      @default(0)
+  aiGenerations      Int      @default(0)
+  apiCostEstimate    Float    @default(0.0)
+  cacheHitCount      Int      @default(0)
+  apiErrorCount      Int      @default(0)
+  totalApiCount      Int      @default(0)
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String?  // Optional, if user is logged in
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type      String   @default("GENERAL") // e.g., "BUG", "FEATURE", "GENERAL"
+  content   String
+  status    String   @default("NEW") // "NEW", "REVIEWED", "RESOLVED"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+}
+
+// Tracks abandoned vs finalized trip funnels
+model TripAttempt {
+  id             String    @id @default(cuid())
+  userId         String?
+  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination    String?
+  stepReached    String    @default("STARTED") // "STARTED", "DATES_SET", "FINALIZED"
+  abandoned      Boolean   @default(false)
+  timeToComplete Int?      // Seconds from start to finalized
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([stepReached])
+}
+
+// Tracks 2σ anomalies and system alerts
+model SystemAnomaly {
+  id          String   @id @default(cuid())
+  type        String   // "COST_SPIKE", "LATENCY_SPIKE", "ERROR_RATE"
+  endpoint    String?
+  severity    String   @default("MEDIUM")
+  resolved    Boolean  @default(false)
+  details     Json     // e.g., { expected: 200ms, actual: 1200ms }
+  createdAt   DateTime @default(now())
+}
+
+// Tracks detailed unit economics
+model CostAnalysis {
+  id             String   @id @default(cuid())
+  date           String   @unique // YYYY-MM-DD
+  costPerUser    Float    @default(0.0)
+  costPerTrip    Float    @default(0.0)
+  apiBreakdown   Json     // { "Places": 1.20, "Flights": 0.40 }
+  createdAt      DateTime @default(now())
+}
+
+model Article {
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  title              String
+  excerpt            String
+  category           String
+  city               String
+  categoryIcon       String
+  categoryBadgeBg    String
+  categoryBadgeText  String
+  readingTime        String
+  
+  author             Json
+  collaborators      Json?
+  
+  date               String
+  imageUrl           String
+  featured           Boolean? @default(false)
+  featuredOrder      Int?     @default(0)
+  likes              Int      @default(0)
+  views              Int      @default(0)
+  commentsCount      Int      @default(0)
+  controversialScore Int      @default(0)
+  timesPlanned       Int      @default(0)
+  
+  budget             String?
+  bestSeason         String?
+  accommodation      String?
+  transportMode      String?
+  
+  itineraryStops     Json?
+  content            String?  @db.Text
+  mediaType          String?
+  videoUrl           String?
+  
+  comments           Json?
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}

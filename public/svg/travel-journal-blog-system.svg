@@ -1,0 +1,246 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1750" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e293b"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b45309"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1750" fill="#f8fafc"/>
+  <text x="800" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a">Travel Journal Blog System</text>
+  <text x="800" y="54" text-anchor="middle" font-size="12" fill="#64748b">Pages → Next.js API routes → Prisma → NeonDB Article table, plus presigned uploads → Cloudflare R2</text>
+
+  <!-- ===================== PAGES LAYER ===================== -->
+  <g>
+    <rect x="40" y="75" width="1520" height="150" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <text x="60" y="100" font-size="15" font-weight="700" fill="#1e3a8a">Pages — src/app/blog/*</text>
+
+    <rect x="60" y="112" width="340" height="95" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="230" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">blog/page.tsx</text>
+    <text x="75" y="150" font-size="10" fill="#334155">editorial listing: hero, featured cards,</text>
+    <text x="75" y="164" font-size="10" fill="#334155">category pills, newsletter</text>
+    <text x="75" y="180" font-size="10" fill="#334155">calls calculateProgressiveMetrics()</text>
+    <text x="75" y="194" font-size="10" fill="#334155">per rendered article card</text>
+
+    <rect x="415" y="112" width="340" height="95" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="585" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">blog/write/page.tsx</text>
+    <text x="430" y="150" font-size="10" fill="#334155">composer: title, city, category,</text>
+    <text x="430" y="164" font-size="10" fill="#334155">content, media, itinerary metadata</text>
+    <text x="430" y="180" font-size="10" fill="#334155" font-weight="700">isAdminEmail(user?.email) gate</text>
+    <text x="430" y="194" font-size="10" fill="#334155">→ unlocks "admin" custom-author drawer</text>
+
+    <rect x="770" y="112" width="380" height="95" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="960" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">blog/u/[username]/[...slug]/page.tsx</text>
+    <text x="785" y="150" font-size="10" fill="#334155">single-article reader route, keyed by</text>
+    <text x="785" y="164" font-size="10" fill="#334155">author username + slug segments</text>
+    <text x="785" y="180" font-size="10" fill="#334155">also calls calculateProgressiveMetrics()</text>
+    <text x="785" y="194" font-size="10" fill="#334155">for display like/view counters</text>
+
+    <rect x="1165" y="112" width="375" height="95" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="1352" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">blog/media/page.tsx</text>
+    <text x="1180" y="150" font-size="10" fill="#334155">media gallery view (images/video</text>
+    <text x="1180" y="164" font-size="10" fill="#334155">content pulled from Article rows)</text>
+    <text x="1180" y="180" font-size="10" fill="#334155" font-style="italic" fill-opacity="0.8">(guidelines/page.tsx also exists —</text>
+    <text x="1180" y="194" font-size="10" fill="#334155" font-style="italic" fill-opacity="0.8">static content, no API calls)</text>
+  </g>
+
+  <!-- arrows pages -> api routes -->
+  <path d="M 230 207 L 230 250" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <path d="M 585 207 L 500 250" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <path d="M 960 207 L 800 250" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <path d="M 1352 207 L 1100 250" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===================== API ROUTES LAYER ===================== -->
+  <g>
+    <rect x="40" y="255" width="1520" height="230" rx="14" fill="#fef9c3" stroke="#eab308" stroke-width="2"/>
+    <text x="60" y="280" font-size="15" font-weight="700" fill="#713f12">Next.js API Routes — src/app/api/blogs/* and src/app/api/upload</text>
+
+    <rect x="60" y="295" width="330" height="90" rx="8" fill="#fef08a" stroke="#ca8a04"/>
+    <text x="225" y="315" text-anchor="middle" font-size="12" font-weight="700" fill="#713f12">GET/POST /api/blogs</text>
+    <text x="75" y="333" font-size="10" fill="#334155">GET: prisma.article.findMany()</text>
+    <text x="75" y="347" font-size="10" fill="#334155">  orderBy createdAt desc</text>
+    <text x="75" y="363" font-size="10" fill="#334155">POST: featuredOrder re-slotting logic,</text>
+    <text x="75" y="377" font-size="10" fill="#334155">  then prisma.article.create()</text>
+
+    <rect x="405" y="295" width="330" height="90" rx="8" fill="#fef08a" stroke="#ca8a04"/>
+    <text x="570" y="315" text-anchor="middle" font-size="12" font-weight="700" fill="#713f12">GET/PUT/DELETE /api/blogs/[id]</text>
+    <text x="420" y="333" font-size="10" fill="#334155">GET: prisma.article.findUnique(id)</text>
+    <text x="420" y="347" font-size="10" fill="#334155">PUT: same featuredOrder shuffle,</text>
+    <text x="420" y="361" font-size="10" fill="#334155">  then prisma.article.update()</text>
+    <text x="420" y="375" font-size="10" fill="#334155">DELETE: closes featuredOrder gap,</text>
+    <text x="420" y="389" font-size="9.5" fill="#334155">  then prisma.article.delete()</text>
+
+    <rect x="750" y="295" width="330" height="90" rx="8" fill="#fef08a" stroke="#ca8a04"/>
+    <text x="915" y="315" text-anchor="middle" font-size="12" font-weight="700" fill="#713f12">POST /api/blogs/[id]/metrics</text>
+    <text x="765" y="333" font-size="10" fill="#334155">action: "view" → views: increment 1</text>
+    <text x="765" y="347" font-size="10" fill="#334155">action: "like" → likes: increment 1</text>
+    <text x="765" y="361" font-size="10" fill="#334155">action: "unlike" → likes: decrement 1</text>
+    <text x="765" y="377" font-size="10" fill="#334155">prisma.article.update({'{'}where:{'{'}id{'}'}{'}'})</text>
+
+    <rect x="1095" y="295" width="445" height="90" rx="8" fill="#fde68a" stroke="#d97706"/>
+    <text x="1317" y="315" text-anchor="middle" font-size="12" font-weight="700" fill="#78350f">POST /api/upload</text>
+    <text x="1110" y="333" font-size="10" fill="#334155">validates contentType (image/* or video/*)</text>
+    <text x="1110" y="347" font-size="10" fill="#334155">builds unique key: {'{'}Date.now(){'}'}-{'{'}sanitized filename{'}'}</text>
+    <text x="1110" y="361" font-size="10" fill="#334155">S3Client + PutObjectCommand → getSignedUrl()</text>
+    <text x="1110" y="377" font-size="10" fill="#334155">returns {'{'}uploadUrl (5-min expiry), publicUrl, type{'}'}</text>
+
+    <rect x="60" y="400" width="1480" height="65" rx="8" fill="#ffffff" stroke="#ca8a04" stroke-width="1.5"/>
+    <text x="800" y="420" text-anchor="middle" font-size="11" font-weight="700" fill="#713f12">Shared helper: src/lib/blogArticleData.ts</text>
+    <text x="80" y="438" font-size="10" fill="#334155">buildArticleCreateData(data, featuredOrder) / buildArticleUpdateData(data, featuredOrder) — single field-mapping source used by both POST /api/blogs and PUT /api/blogs/[id]</text>
+    <text x="80" y="453" font-size="10" fill="#334155">so create/update stay schema-consistent (author, collaborators, itineraryStops, mediaType, videoUrl, comments — all pass-through Json/String fields)</text>
+  </g>
+
+  <!-- arrows to prisma -->
+  <path d="M 225 385 L 225 500" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <path d="M 570 385 L 570 500" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <path d="M 915 385 L 700 500" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <path d="M 1317 385 L 1317 500" stroke="#b45309" stroke-width="2" marker-end="url(#arrowAmber)"/>
+
+  <!-- ===================== PRISMA / NEONDB LAYER ===================== -->
+  <g>
+    <rect x="40" y="505" width="900" height="200" rx="14" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+    <text x="60" y="530" font-size="15" font-weight="700" fill="#14532d">Prisma → NeonDB — Article table (prisma/schema.prisma)</text>
+
+    <rect x="60" y="545" width="860" height="145" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="490" y="565" text-anchor="middle" font-size="12" font-weight="700" fill="#14532d">model Article</text>
+    <text x="75" y="583" font-size="10" fill="#334155">id, slug (@unique), title, excerpt, category, city, categoryIcon, categoryBadgeBg/Text, readingTime</text>
+    <text x="75" y="598" font-size="10" fill="#334155">author (Json), collaborators (Json?)  ← carries the admin custom-author override payload</text>
+    <text x="75" y="613" font-size="10" fill="#334155">date, imageUrl, featured?, featuredOrder? — the ordering fields both /api/blogs routes maintain</text>
+    <text x="75" y="628" font-size="10" fill="#334155">likes, views, commentsCount, controversialScore, timesPlanned — real persisted counters (mutated by /metrics)</text>
+    <text x="75" y="643" font-size="10" fill="#334155">budget?, bestSeason?, accommodation?, transportMode?, itineraryStops? (Json?)</text>
+    <text x="75" y="658" font-size="10" fill="#334155">content? (String? @db.Text), mediaType?, videoUrl? ← stores the R2 publicUrl returned by /api/upload</text>
+    <text x="75" y="673" font-size="10" fill="#334155">comments? (Json?), createdAt, updatedAt</text>
+  </g>
+
+  <!-- ===================== R2 LAYER ===================== -->
+  <g>
+    <rect x="970" y="505" width="590" height="200" rx="14" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="990" y="530" font-size="15" font-weight="700" fill="#9a3412">Cloudflare R2 (Object Storage)</text>
+
+    <rect x="990" y="545" width="550" height="145" rx="8" fill="#ffedd5" stroke="#f97316"/>
+    <text x="1265" y="565" text-anchor="middle" font-size="12" font-weight="700" fill="#9a3412">S3-compatible bucket</text>
+    <text x="1005" y="585" font-size="10" fill="#334155">Client uploads the raw file directly to the presigned uploadUrl</text>
+    <text x="1005" y="600" font-size="10" fill="#334155">(browser → R2 PUT, bypasses the Next.js server entirely — no</text>
+    <text x="1005" y="615" font-size="10" fill="#334155">file bytes ever transit through Vercel)</text>
+    <text x="1005" y="635" font-size="10" fill="#334155">R2_ACCOUNT_ID / R2_BUCKET_NAME / R2_PUBLIC_URL env vars</text>
+    <text x="1005" y="650" font-size="10" fill="#334155">resulting publicUrl is what write/page.tsx then embeds as</text>
+    <text x="1005" y="665" font-size="10" fill="#334155">imageUrl / videoUrl before POSTing the Article to /api/blogs</text>
+  </g>
+
+  <!-- Client -> R2 direct upload arrow, drawn back up to write page -->
+  <path d="M 1100 545 C 900 400, 700 300, 585 207" stroke="#b45309" stroke-width="1.8" fill="none" marker-end="url(#arrowAmber)" stroke-dasharray="6,4"/>
+  <text x="850" y="360" font-size="10" fill="#b45309" font-weight="700">direct browser PUT with presigned URL (write/page.tsx)</text>
+
+  <!-- ===================== CUSTOM-AUTHOR POSTING PATH (annotated side-note) ===================== -->
+  <g>
+    <rect x="40" y="725" width="1520" height="290" rx="14" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
+    <text x="800" y="750" text-anchor="middle" font-size="15" font-weight="700" fill="#78350f">Side-note: Custom-Author Posting Path — isAdminEmail() gate (src/lib/admin.ts, checked in write/page.tsx)</text>
+
+    <rect x="60" y="765" width="450" height="230" rx="8" fill="#ffffff" stroke="#d97706"/>
+    <text x="285" y="787" text-anchor="middle" font-size="11.5" font-weight="700" fill="#78350f">1. Identity resolution on mount</text>
+    <text x="75" y="806" font-size="9.7" fill="#334155">reads saved profile / saved user from local state</text>
+    <text x="75" y="820" font-size="9.7" fill="#334155">(username, displayName, pfp, isAdmin flags)</text>
+    <text x="75" y="840" font-size="9.7" font-weight="700" fill="#78350f">if isAdminEmail(user?.email) → currentIsAdmin = true</text>
+    <text x="75" y="858" font-size="9.7" fill="#334155">(server-verified admin email list wins over any locally</text>
+    <text x="75" y="872" font-size="9.7" fill="#334155">stored isAdmin flag from a saved profile/user object)</text>
+    <text x="75" y="892" font-size="9.7" fill="#334155">setIsAdmin(currentIsAdmin) drives conditional UI —</text>
+    <text x="75" y="906" font-size="9.7" fill="#334155">the "admin" drawer button/tab and its contents render</text>
+    <text x="75" y="920" font-size="9.7" fill="#334155">only when {'{'}activeDrawer === 'admin' &amp;&amp; isAdmin{'}'}</text>
+    <text x="75" y="944" font-size="9.3" fill="#64748b" font-style="italic">handleToggleDrawer('admin') switches the composer's</text>
+    <text x="75" y="958" font-size="9.3" fill="#64748b" font-style="italic">side panel into the admin-only editing mode</text>
+
+    <rect x="530" y="765" width="490" height="230" rx="8" fill="#ffffff" stroke="#d97706"/>
+    <text x="775" y="787" text-anchor="middle" font-size="11.5" font-weight="700" fill="#78350f">2. Admin-only "post as" override</text>
+    <text x="545" y="806" font-size="9.7" fill="#334155">Admin drawer copy (verbatim from code):</text>
+    <text x="545" y="822" font-size="9.3" fill="#334155" font-style="italic">"As an admin, you can post this blog or video under</text>
+    <text x="545" y="836" font-size="9.3" fill="#334155" font-style="italic">any custom author handle, display name, and avatar</text>
+    <text x="545" y="850" font-size="9.3" fill="#334155" font-style="italic">picture."</text>
+    <text x="545" y="870" font-size="9.7" fill="#334155">lets a real admin author-spoof: override handle,</text>
+    <text x="545" y="884" font-size="9.7" fill="#334155">display name, and avatar for THIS post only</text>
+    <text x="545" y="904" font-size="9.7" fill="#334155">the resulting author object is embedded directly into</text>
+    <text x="545" y="918" font-size="9.7" fill="#334155">the Article.author Json field on create/update</text>
+    <text x="545" y="938" font-size="9.7" fill="#334155">— the DB never distinguishes "real" vs "spoofed" author,</text>
+    <text x="545" y="952" font-size="9.7" fill="#334155">it's purely a client-side UI gate, enforced only at write-time</text>
+
+    <rect x="1040" y="765" width="500" height="230" rx="8" fill="#ffffff" stroke="#d97706"/>
+    <text x="1290" y="787" text-anchor="middle" font-size="11.5" font-weight="700" fill="#78350f">3. Editing existing articles (editId flow)</text>
+    <text x="1055" y="806" font-size="9.7" fill="#334155">if URL carries editId: fetch(`/api/blogs/${'{'}editId{'}'}`)</text>
+    <text x="1055" y="822" font-size="9.7" fill="#334155">merges the fetched Article into [customBlogs, ...ARTICLES,</text>
+    <text x="1055" y="836" font-size="9.7" fill="#334155">FEATURED_ARTICLE] and matches by id OR slug</text>
+    <text x="1055" y="856" font-size="9.7" fill="#334155">pre-fills title, city, category, imageUrl, content,</text>
+    <text x="1055" y="870" font-size="9.7" fill="#334155">mediaType, etc. into the composer form state</text>
+    <text x="1055" y="890" font-size="9.7" fill="#334155">submit then calls PUT /api/blogs/[id] instead of POST —</text>
+    <text x="1055" y="904" font-size="9.7" fill="#334155">same buildArticleUpdateData() mapping, same featuredOrder</text>
+    <text x="1055" y="918" font-size="9.7" fill="#334155">re-slotting logic runs again server-side</text>
+  </g>
+
+  <!-- ===================== PROGRESSIVE FAKE METRICS (annotated side-note) ===================== -->
+  <g>
+    <rect x="40" y="1030" width="1520" height="340" rx="14" fill="#ede9fe" stroke="#a78bfa" stroke-width="2.5"/>
+    <text x="800" y="1055" text-anchor="middle" font-size="15" font-weight="700" fill="#4c1d95">Side-note: Progressive Fake-Metrics Calculation — src/lib/blogMetrics.ts::calculateProgressiveMetrics()</text>
+    <text x="800" y="1073" text-anchor="middle" font-size="10.5" fill="#5b21b6">Called client-side by blog/page.tsx, blog/u/[username]/[...slug]/page.tsx, and components/blog/ArticleReaderModal.tsx — never persisted, purely a display-time overlay</text>
+
+    <rect x="60" y="1085" width="360" height="260" rx="8" fill="#ffffff" stroke="#8b5cf6"/>
+    <text x="240" y="1107" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4c1d95">1. Deterministic seed from article ID</text>
+    <text x="75" y="1126" font-size="9.7" fill="#334155">generateSeed(article.id) — a simple string hash</text>
+    <text x="75" y="1140" font-size="9.7" fill="#334155">(h = 31·h + charCode, Math.imul, 32-bit)</text>
+    <text x="75" y="1160" font-size="9.7" fill="#334155">mulberry32(seed) — deterministic PRNG</text>
+    <text x="75" y="1174" font-size="9.7" fill="#334155">→ same article ID always yields the SAME</text>
+    <text x="75" y="1188" font-size="9.7" fill="#334155">fake-metric ceiling on every page load, for</text>
+    <text x="75" y="1202" font-size="9.7" fill="#334155">every viewer (no server round-trip needed)</text>
+    <text x="75" y="1222" font-size="9.7" fill="#334155">createdAt extracted from the trailing numeric</text>
+    <text x="75" y="1236" font-size="9.7" fill="#334155">segment of article.id (e.g. "blog-1718293921")</text>
+    <text x="75" y="1250" font-size="9.7" fill="#334155">validated as &gt; 1500000000000 (post-2020 sanity</text>
+    <text x="75" y="1264" font-size="9.7" fill="#334155">check) else falls back to Date.now()</text>
+
+    <rect x="440" y="1085" width="330" height="260" rx="8" fill="#ffffff" stroke="#8b5cf6"/>
+    <text x="605" y="1107" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4c1d95">2. Randomized per-article ceilings</text>
+    <text x="455" y="1128" font-size="9.7" font-weight="700" fill="#5b21b6">maxLikes = floor(rand()×100) + 100</text>
+    <text x="455" y="1143" font-size="9.3" fill="#334155">→ range 100–199 (per user request:</text>
+    <text x="455" y="1157" font-size="9.3" fill="#334155">"cap it &gt;100 and &lt;200")</text>
+    <text x="455" y="1180" font-size="9.7" font-weight="700" fill="#5b21b6">maxViews = floor(rand()×800) + 700</text>
+    <text x="455" y="1195" font-size="9.3" fill="#334155">→ range 700–1499 (per user request:</text>
+    <text x="455" y="1209" font-size="9.3" fill="#334155">"views &gt;700 and &lt;1500")</text>
+    <text x="455" y="1232" font-size="9.7" fill="#334155">both ceilings are per-article constants —</text>
+    <text x="455" y="1246" font-size="9.7" fill="#334155">re-derived identically each render from the</text>
+    <text x="455" y="1260" font-size="9.7" fill="#334155">same seeded PRNG sequence</text>
+
+    <rect x="800" y="1085" width="360" height="260" rx="8" fill="#ffffff" stroke="#8b5cf6"/>
+    <text x="980" y="1107" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4c1d95">3. Non-linear growth curve (sqrt)</text>
+    <text x="815" y="1126" font-size="9.7" fill="#334155">ageInHours = (now − createdAt) / 3.6e6</text>
+    <text x="815" y="1144" font-size="9.7" fill="#334155">cappedAge = clamp(ageInHours, 0, 72)</text>
+    <text x="815" y="1163" font-size="9.7" font-weight="700" fill="#5b21b6">growthCurve = √cappedAge / √72</text>
+    <text x="815" y="1180" font-size="9.3" fill="#334155">→ fast early growth, plateaus at 72 hours</text>
+    <text x="815" y="1194" font-size="9.3" fill="#334155">  (fresh posts feel "already trending",</text>
+    <text x="815" y="1208" font-size="9.3" fill="#334155">  not linearly crawling up from zero)</text>
+    <text x="815" y="1230" font-size="9.7" font-weight="700" fill="#5b21b6">fakeLikes = floor(maxLikes × growthCurve)</text>
+    <text x="815" y="1246" font-size="9.7" font-weight="700" fill="#5b21b6">fakeViews = floor(maxViews × growthCurve)</text>
+
+    <rect x="1180" y="1085" width="360" height="260" rx="8" fill="#ffffff" stroke="#8b5cf6"/>
+    <text x="1360" y="1107" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4c1d95">4. Blended with real DB counters</text>
+    <text x="1195" y="1128" font-size="9.7" font-weight="700" fill="#5b21b6">likesCount = fakeLikes + (article.likes || 0)</text>
+    <text x="1195" y="1146" font-size="9.7" font-weight="700" fill="#5b21b6">viewsCount = fakeViews + (article.views || 0)</text>
+    <text x="1195" y="1168" font-size="9.7" fill="#334155">real likes/views come from the persisted</text>
+    <text x="1195" y="1182" font-size="9.7" fill="#334155">Article.likes / Article.views columns —</text>
+    <text x="1195" y="1196" font-size="9.7" fill="#334155">mutated ONLY by POST /api/blogs/[id]/metrics</text>
+    <text x="1195" y="1218" font-size="9.7" fill="#334155">so the number shown to users is:</text>
+    <text x="1195" y="1234" font-size="9.7" font-style="italic" fill="#334155">real DB increments + a deterministic,</text>
+    <text x="1195" y="1248" font-size="9.7" font-style="italic" fill="#334155">time-decaying "organic-looking" floor</text>
+    <text x="1195" y="1264" font-size="9.3" fill="#64748b">— entirely computed client-side, never written back to Postgres</text>
+  </g>
+
+  <!-- ===================== LEGEND ===================== -->
+  <g font-size="11">
+    <text x="60" y="1400" font-weight="700" fill="#0f172a">Legend:</text>
+    <line x1="140" y1="1395" x2="185" y2="1395" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="195" y="1399" fill="#334155">Standard request/data flow (Prisma-backed)</text>
+    <line x1="480" y1="1395" x2="525" y2="1395" stroke="#b45309" stroke-width="2" marker-end="url(#arrowAmber)" stroke-dasharray="6,4"/>
+    <text x="535" y="1399" fill="#334155">R2 presigned-upload path (bypasses Next.js server for the file bytes)</text>
+  </g>
+</svg>

@@ -1,0 +1,462 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 2000" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="one" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#334155" stroke-width="1.5"/>
+    </marker>
+    <marker id="many" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" orient="auto-start-reverse">
+      <path d="M0,0 L10,6 L0,12 M0,6 L10,6" fill="none" stroke="#334155" stroke-width="1.3"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="2000" height="2000" fill="#f8fafc"/>
+  <text x="1000" y="36" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">PlanBro — Prisma Schema ER Diagram (PostgreSQL / NeonDB)</text>
+  <text x="1000" y="58" text-anchor="middle" font-size="12.5" fill="#64748b">source: prisma/schema.prisma</text>
+
+  <!-- ============ AUTH CLUSTER ============ -->
+  <g>
+    <rect x="40" y="90" width="480" height="430" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <text x="60" y="115" font-size="15" font-weight="700" fill="#1e3a8a">Auth Cluster</text>
+
+    <!-- User -->
+    <rect x="60" y="130" width="220" height="300" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="60" y="130" width="220" height="26" rx="8" fill="#3b82f6"/>
+    <rect x="60" y="148" width="220" height="8" fill="#3b82f6"/>
+    <text x="170" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">User</text>
+    <g font-size="10.3" fill="#1e293b">
+      <text x="70" y="172" font-weight="700">PK id</text><text x="220" y="172" fill="#64748b">String (cuid)</text>
+      <text x="70" y="186">email</text><text x="220" y="186" fill="#64748b">String @unique</text>
+      <text x="70" y="200">name</text><text x="220" y="200" fill="#64748b">String</text>
+      <text x="70" y="214">picture</text><text x="220" y="214" fill="#64748b">String?</text>
+      <text x="70" y="228">username</text><text x="220" y="228" fill="#64748b">String? @unique</text>
+      <text x="70" y="242">passwordHash</text><text x="220" y="242" fill="#64748b">String?</text>
+      <text x="70" y="256">authProvider</text><text x="220" y="256" fill="#64748b">String @default</text>
+      <text x="70" y="270">apiCalls</text><text x="220" y="270" fill="#64748b">Int @default(0)</text>
+      <text x="70" y="284">apiCallsFlights..Places</text><text x="220" y="284" fill="#64748b" font-size="9">Int (x5 counters)</text>
+      <text x="70" y="298">apiCallsRecommendations</text><text x="220" y="298" fill="#64748b" font-size="9">Int @default(0)</text>
+      <text x="70" y="312">lastApiCallDate</text><text x="220" y="312" fill="#64748b">DateTime @default(now)</text>
+      <text x="70" y="326">createdAt</text><text x="220" y="326" fill="#64748b">DateTime @default(now)</text>
+      <text x="70" y="340">updatedAt</text><text x="220" y="340" fill="#64748b">DateTime @updatedAt</text>
+      <line x1="65" y1="350" x2="275" y2="350" stroke="#cbd5e1"/>
+      <text x="70" y="365" fill="#0369a1" font-size="9.8">→ sessions Session[]</text>
+      <text x="70" y="378" fill="#0369a1" font-size="9.8">→ tripHistories TripHistory[]</text>
+      <text x="70" y="391" fill="#0369a1" font-size="9.8">→ savedPassengers SavedPassenger[]</text>
+      <text x="70" y="404" fill="#0369a1" font-size="9.8">→ dailyStats DailyUserStat[]</text>
+      <text x="70" y="417" fill="#0369a1" font-size="9.8">→ feedbacks Feedback[], tripAttempts TripAttempt[]</text>
+    </g>
+
+    <!-- Session -->
+    <rect x="320" y="130" width="180" height="150" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="320" y="130" width="180" height="26" fill="#3b82f6" rx="8"/>
+    <rect x="320" y="148" width="180" height="8" fill="#3b82f6"/>
+    <text x="410" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Session</text>
+    <g font-size="10.3" fill="#1e293b">
+      <text x="330" y="172" font-weight="700">PK id</text><text x="460" y="172" fill="#64748b" font-size="9">String</text>
+      <text x="330" y="186" font-weight="700" fill="#b45309">FK userId</text>
+      <text x="330" y="200">token</text><text x="460" y="200" fill="#64748b" font-size="9">String @unique</text>
+      <text x="330" y="214">expiresAt</text><text x="460" y="214" fill="#64748b" font-size="9">DateTime</text>
+      <text x="330" y="228">createdAt</text><text x="460" y="228" fill="#64748b" font-size="9">DateTime @default</text>
+      <text x="330" y="250" fill="#64748b" font-size="9.3">onDelete: Cascade</text>
+    </g>
+  </g>
+  <path d="M 280 200 L 320 200" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+
+  <!-- ============ TRIP DATA CLUSTER ============ -->
+  <g>
+    <rect x="560" y="90" width="480" height="430" rx="14" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="580" y="115" font-size="15" font-weight="700" fill="#9a3412">Trip Data Cluster</text>
+
+    <rect x="580" y="130" width="220" height="150" rx="8" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <rect x="580" y="130" width="220" height="26" fill="#f97316" rx="8"/>
+    <rect x="580" y="148" width="220" height="8" fill="#f97316"/>
+    <text x="690" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">TripHistory</text>
+    <g font-size="10.3" fill="#1e293b">
+      <text x="590" y="172" font-weight="700">PK id</text><text x="770" y="172" fill="#64748b" font-size="9">String</text>
+      <text x="590" y="186" font-weight="700" fill="#b45309">FK userId</text>
+      <text x="590" y="200">destination</text><text x="770" y="200" fill="#64748b" font-size="9">String</text>
+      <text x="590" y="214">snapshot</text><text x="770" y="214" fill="#64748b" font-size="9">Json</text>
+      <text x="590" y="228">createdAt</text><text x="770" y="228" fill="#64748b" font-size="9">DateTime @default</text>
+      <text x="590" y="250" fill="#64748b" font-size="9.3">onDelete: Cascade</text>
+    </g>
+
+    <rect x="580" y="300" width="440" height="200" rx="8" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <rect x="580" y="300" width="440" height="26" fill="#f97316" rx="8"/>
+    <rect x="580" y="318" width="440" height="8" fill="#f97316"/>
+    <text x="800" y="318" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">AppState</text>
+    <g font-size="10.3" fill="#1e293b">
+      <text x="590" y="342" font-weight="700">PK id</text><text x="800" y="342" fill="#64748b">String (cuid)</text>
+      <text x="590" y="356">storeName</text><text x="800" y="356" fill="#64748b">String @unique</text>
+      <text x="590" y="370">stateJson</text><text x="800" y="370" fill="#64748b">String (JSON blob)</text>
+      <text x="590" y="384">updatedAt</text><text x="800" y="384" fill="#64748b">DateTime @updatedAt</text>
+      <text x="590" y="406" fill="#64748b" font-size="9.5" font-style="italic">// serialized Zustand store snapshot</text>
+      <text x="590" y="420" fill="#64748b" font-size="9.5" font-style="italic">// no FK — standalone persistence table</text>
+    </g>
+
+    <!-- SavedPassenger + TripAttempt also live conceptually here, small cards -->
+    <rect x="580" y="510" width="215" height="0" fill="none"/>
+  </g>
+  <path d="M 280 260 C 400 260, 400 200, 580 200" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+
+  <!-- SavedPassenger & TripAttempt (auth-adjacent, place near user) -->
+  <g>
+    <rect x="1060" y="90" width="460" height="430" rx="14" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="2"/>
+    <text x="1080" y="115" font-size="15" font-weight="700" fill="#5b21b6">User-Linked Records</text>
+
+    <rect x="1080" y="130" width="200" height="150" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="1080" y="130" width="200" height="26" fill="#8b5cf6" rx="8"/>
+    <rect x="1080" y="148" width="200" height="8" fill="#8b5cf6"/>
+    <text x="1180" y="148" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">SavedPassenger</text>
+    <g font-size="10" fill="#1e293b">
+      <text x="1090" y="172" font-weight="700">PK id</text><text x="1250" y="172" fill="#64748b" font-size="8.5">String</text>
+      <text x="1090" y="186" font-weight="700" fill="#b45309">FK userId</text>
+      <text x="1090" y="200">name / age / gender</text>
+      <text x="1090" y="214">city</text><text x="1250" y="214" fill="#64748b" font-size="8.5">String?</text>
+      <text x="1090" y="228">createdAt</text><text x="1250" y="228" fill="#64748b" font-size="8.5">DateTime</text>
+      <text x="1090" y="250" font-weight="700" fill="#7c3aed" font-size="9.3">@@unique([userId, name])</text>
+    </g>
+
+    <rect x="1300" y="130" width="200" height="165" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="1300" y="130" width="200" height="26" fill="#8b5cf6" rx="8"/>
+    <rect x="1300" y="148" width="200" height="8" fill="#8b5cf6"/>
+    <text x="1400" y="148" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">TripAttempt</text>
+    <g font-size="10" fill="#1e293b">
+      <text x="1310" y="172" font-weight="700">PK id</text><text x="1470" y="172" fill="#64748b" font-size="8.5">String</text>
+      <text x="1310" y="186" font-weight="700" fill="#b45309">FK userId?</text><text x="1470" y="186" fill="#64748b" font-size="8.5">nullable</text>
+      <text x="1310" y="200">destination</text><text x="1470" y="200" fill="#64748b" font-size="8.5">String?</text>
+      <text x="1310" y="214">stepReached</text><text x="1470" y="214" fill="#64748b" font-size="8.5">String @default</text>
+      <text x="1310" y="228">abandoned</text><text x="1470" y="228" fill="#64748b" font-size="8.5">Boolean</text>
+      <text x="1310" y="242">timeToComplete</text><text x="1470" y="242" fill="#64748b" font-size="8.5">Int?</text>
+      <text x="1310" y="256">createdAt / updatedAt</text>
+      <text x="1310" y="278" fill="#64748b" font-size="9">@@index([userId, stepReached])</text>
+    </g>
+
+    <rect x="1080" y="310" width="200" height="180" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="1080" y="310" width="200" height="26" fill="#8b5cf6" rx="8"/>
+    <rect x="1080" y="328" width="200" height="8" fill="#8b5cf6"/>
+    <text x="1180" y="328" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">Feedback</text>
+    <g font-size="10" fill="#1e293b">
+      <text x="1090" y="352" font-weight="700">PK id</text><text x="1250" y="352" fill="#64748b" font-size="8.5">String</text>
+      <text x="1090" y="366" font-weight="700" fill="#b45309">FK userId?</text><text x="1250" y="366" fill="#64748b" font-size="8.5">nullable</text>
+      <text x="1090" y="380">type</text><text x="1250" y="380" fill="#64748b" font-size="8.5">String @default</text>
+      <text x="1090" y="394">content</text><text x="1250" y="394" fill="#64748b" font-size="8.5">String</text>
+      <text x="1090" y="408">status</text><text x="1250" y="408" fill="#64748b" font-size="8.5">String @default</text>
+      <text x="1090" y="422">createdAt / updatedAt</text>
+      <text x="1090" y="444" fill="#64748b" font-size="9">onDelete: SetNull</text>
+      <text x="1090" y="458" fill="#64748b" font-size="9">@@index(userId,type,status)</text>
+    </g>
+    <text x="1310" y="500" font-size="10" fill="#64748b" font-style="italic">DailyUserStat card shown in Analytics cluster below</text>
+  </g>
+  <path d="M 280 165 C 700 165, 900 165, 1080 200" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+  <path d="M 280 230 C 900 260, 1150 260, 1300 200" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+  <path d="M 280 300 C 700 350, 900 380, 1080 390" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+
+  <!-- ============ TRANSPORT CACHE CLUSTER ============ -->
+  <g>
+    <rect x="40" y="550" width="1000" height="330" rx="14" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+    <text x="60" y="575" font-size="15" font-weight="700" fill="#14532d">Transport Cache Cluster (standalone — no FKs)</text>
+
+    <rect x="60" y="590" width="220" height="150" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+    <rect x="60" y="590" width="220" height="26" fill="#22c55e" rx="8"/>
+    <rect x="60" y="608" width="220" height="8" fill="#22c55e"/>
+    <text x="170" y="608" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Flight</text>
+    <g font-size="9.8" fill="#1e293b">
+      <text x="70" y="632" font-weight="700">PK id</text><text x="70" y="646">flight_no, origin, dest</text>
+      <text x="70" y="660">airline, freq</text>
+      <text x="70" y="674">dep_time, arr_time</text>
+      <text x="70" y="694" font-weight="700" fill="#15803d" font-size="9">@@unique([flight_no,origin,</text>
+      <text x="70" y="706" font-weight="700" fill="#15803d" font-size="9">  dest,dep_time,arr_time])</text>
+      <text x="70" y="722">String fields</text>
+    </g>
+
+    <rect x="300" y="590" width="220" height="150" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+    <rect x="300" y="590" width="220" height="26" fill="#22c55e" rx="8"/>
+    <rect x="300" y="608" width="220" height="8" fill="#22c55e"/>
+    <text x="410" y="608" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Bus</text>
+    <g font-size="9.8" fill="#1e293b">
+      <text x="310" y="632" font-weight="700">PK id</text><text x="310" y="646">origin, dest, date</text>
+      <text x="310" y="660">bus_name, timings</text>
+      <text x="310" y="674">price</text><text x="470" y="674" fill="#64748b" font-size="8.5">Float</text>
+      <text x="310" y="694" font-weight="700" fill="#15803d" font-size="9">@@unique([origin,dest,date,</text>
+      <text x="310" y="706" font-weight="700" fill="#15803d" font-size="9">  bus_name,timings])</text>
+    </g>
+
+    <rect x="540" y="590" width="230" height="150" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+    <rect x="540" y="590" width="230" height="26" fill="#22c55e" rx="8"/>
+    <rect x="540" y="608" width="230" height="8" fill="#22c55e"/>
+    <text x="655" y="608" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Train</text>
+    <g font-size="9.5" fill="#1e293b">
+      <text x="550" y="632" font-weight="700">PK id</text><text x="550" y="646">train_num, train_name</text>
+      <text x="550" y="660">origin, dest, date</text>
+      <text x="550" y="674">dep_time, arr_time, duration_hours, price</text>
+      <text x="550" y="694" font-weight="700" fill="#15803d" font-size="9">@@unique([train_num,origin,</text>
+      <text x="550" y="706" font-weight="700" fill="#15803d" font-size="9">  dest,date])</text>
+    </g>
+
+    <rect x="60" y="760" width="240" height="105" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+    <rect x="60" y="760" width="240" height="26" fill="#22c55e" rx="8"/>
+    <rect x="60" y="778" width="240" height="8" fill="#22c55e"/>
+    <text x="180" y="778" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Hotel</text>
+    <g font-size="9.3" fill="#1e293b">
+      <text x="70" y="800" font-weight="700">PK id</text><text x="70" y="812">hotel_id, city, check_in/out_date</text>
+      <text x="70" y="824">name, price, rating, lat, lon, image_url?</text>
+      <text x="70" y="842" font-weight="700" fill="#15803d" font-size="8.7">@@unique([hotel_id,city,</text>
+      <text x="70" y="852" font-weight="700" fill="#15803d" font-size="8.7">  check_in_date,check_out_date])</text>
+    </g>
+
+    <rect x="320" y="760" width="230" height="105" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+    <rect x="320" y="760" width="230" height="26" fill="#22c55e" rx="8"/>
+    <rect x="320" y="778" width="230" height="8" fill="#22c55e"/>
+    <text x="435" y="778" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">PlaceCache</text>
+    <g font-size="9.5" fill="#1e293b">
+      <text x="330" y="800" font-weight="700">PK id</text><text x="330" y="814">cacheKey</text><text x="480" y="814" fill="#64748b" font-size="8.5">String @unique</text>
+      <text x="330" y="828">data</text><text x="480" y="828" fill="#64748b" font-size="8.5">Json</text>
+      <text x="330" y="842">expiresAt, createdAt, updatedAt</text>
+    </g>
+
+    <rect x="580" y="760" width="200" height="105" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+    <rect x="580" y="760" width="200" height="26" fill="#22c55e" rx="8"/>
+    <rect x="580" y="778" width="200" height="8" fill="#22c55e"/>
+    <text x="680" y="778" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">PnrCache</text>
+    <g font-size="9.5" fill="#1e293b">
+      <text x="590" y="800" font-weight="700">PK id</text><text x="590" y="814">pnrNumber</text><text x="740" y="814" fill="#64748b" font-size="8.5">@unique</text>
+      <text x="590" y="828">data</text><text x="740" y="828" fill="#64748b" font-size="8.5">Json</text>
+      <text x="590" y="842">updatedAt</text>
+    </g>
+
+    <rect x="800" y="590" width="220" height="150" rx="8" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+    <rect x="800" y="590" width="220" height="26" fill="#22c55e" rx="8"/>
+    <rect x="800" y="608" width="220" height="8" fill="#22c55e"/>
+    <text x="910" y="608" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Landmark</text>
+    <g font-size="9.5" fill="#1e293b">
+      <text x="810" y="632" font-weight="700">PK id</text><text x="810" y="646">name, description?, city?</text>
+      <text x="810" y="660">lat, lng</text><text x="810" y="674">createdAt, updatedAt</text>
+      <text x="810" y="694" font-weight="700" fill="#15803d" font-size="9">@@index([name])</text>
+    </g>
+
+    <text x="60" y="885" font-size="10" fill="#166534" font-style="italic">All tables above: standalone cache tables, no relations — populated/refreshed by FastAPI services layer</text>
+  </g>
+
+  <!-- ============ ANALYTICS CLUSTER ============ -->
+  <g>
+    <rect x="1060" y="550" width="900" height="490" rx="14" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/>
+    <text x="1080" y="575" font-size="15" font-weight="700" fill="#7f1d1d">Analytics / Telemetry Cluster</text>
+
+    <rect x="1080" y="590" width="230" height="200" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="1.5"/>
+    <rect x="1080" y="590" width="230" height="26" fill="#ef4444" rx="8"/>
+    <rect x="1080" y="608" width="230" height="8" fill="#ef4444"/>
+    <text x="1195" y="608" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">DailyUserStat</text>
+    <g font-size="9.3" fill="#1e293b">
+      <text x="1090" y="630" font-weight="700">PK id</text><text x="1090" y="644" font-weight="700" fill="#b45309">FK userId</text>
+      <text x="1090" y="658">date</text><text x="1250" y="658" fill="#64748b" font-size="8.3">String YYYY-MM-DD</text>
+      <text x="1090" y="672">loginCount, apiCalls</text>
+      <text x="1090" y="686">apiCallsRecommendations/Trains/</text>
+      <text x="1090" y="698">Buses/Places/Images/Reviews/</text>
+      <text x="1090" y="710">ETA/Autocomplete</text><text x="1250" y="710" fill="#64748b" font-size="8.3">Int (x8)</text>
+      <text x="1090" y="726">createdAt, updatedAt</text>
+      <text x="1090" y="746" font-weight="700" fill="#b91c1c" font-size="9">@@unique([userId, date])</text>
+    </g>
+
+    <rect x="1330" y="590" width="230" height="200" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="1.5"/>
+    <rect x="1330" y="590" width="230" height="26" fill="#ef4444" rx="8"/>
+    <rect x="1330" y="608" width="230" height="8" fill="#ef4444"/>
+    <text x="1445" y="608" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">DailySystemStat</text>
+    <g font-size="9.3" fill="#1e293b">
+      <text x="1340" y="630" font-weight="700">PK id</text>
+      <text x="1340" y="644">date</text><text x="1500" y="644" fill="#64748b" font-size="8.3">String @unique</text>
+      <text x="1340" y="658">activeUsers, newSignups</text>
+      <text x="1340" y="672">tripsPlanned, tripsCompleted</text>
+      <text x="1340" y="686">aiGenerations, apiCostEstimate</text>
+      <text x="1340" y="700">cacheHitCount, apiErrorCount</text>
+      <text x="1340" y="714">totalApiCount</text>
+      <text x="1340" y="732">createdAt, updatedAt</text>
+      <text x="1340" y="746" font-style="italic" fill="#64748b" font-size="9">no relations — standalone</text>
+    </g>
+
+    <rect x="1590" y="590" width="230" height="200" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="1.5"/>
+    <rect x="1590" y="590" width="230" height="26" fill="#ef4444" rx="8"/>
+    <rect x="1590" y="608" width="230" height="8" fill="#ef4444"/>
+    <text x="1705" y="608" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">TelemetryLog</text>
+    <g font-size="9.3" fill="#1e293b">
+      <text x="1600" y="630" font-weight="700">PK id</text>
+      <text x="1600" y="644">endpoint</text><text x="1740" y="644" fill="#64748b" font-size="8.3">String</text>
+      <text x="1600" y="658">status</text><text x="1740" y="658" fill="#64748b" font-size="8.3">SUCCESS/ERROR/HIT</text>
+      <text x="1600" y="672">durationMs?</text><text x="1740" y="672" fill="#64748b" font-size="8.3">Int?</text>
+      <text x="1600" y="686">errorMessage?</text>
+      <text x="1600" y="700">costEstimate</text><text x="1740" y="700" fill="#64748b" font-size="8.3">Float @default(0)</text>
+      <text x="1600" y="714">createdAt</text>
+      <text x="1600" y="734" font-weight="700" fill="#b91c1c" font-size="9">@@index(endpoint,status,createdAt)</text>
+    </g>
+
+    <rect x="1080" y="810" width="230" height="150" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="1.5"/>
+    <rect x="1080" y="810" width="230" height="26" fill="#ef4444" rx="8"/>
+    <rect x="1080" y="828" width="230" height="8" fill="#ef4444"/>
+    <text x="1195" y="828" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">SystemAnomaly</text>
+    <g font-size="9.3" fill="#1e293b">
+      <text x="1090" y="850" font-weight="700">PK id</text>
+      <text x="1090" y="864">type</text><text x="1250" y="864" fill="#64748b" font-size="8.3">COST/LATENCY/ERROR</text>
+      <text x="1090" y="878">endpoint?</text><text x="1090" y="892">severity</text><text x="1250" y="892" fill="#64748b" font-size="8.3">@default(MEDIUM)</text>
+      <text x="1090" y="906">resolved</text><text x="1250" y="906" fill="#64748b" font-size="8.3">Boolean</text>
+      <text x="1090" y="920">details</text><text x="1250" y="920" fill="#64748b" font-size="8.3">Json</text>
+      <text x="1090" y="934">createdAt</text>
+      <text x="1090" y="950" font-style="italic" fill="#64748b" font-size="9">no relations — standalone</text>
+    </g>
+
+    <rect x="1330" y="810" width="230" height="150" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="1.5"/>
+    <rect x="1330" y="810" width="230" height="26" fill="#ef4444" rx="8"/>
+    <rect x="1330" y="828" width="230" height="8" fill="#ef4444"/>
+    <text x="1445" y="828" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">AuditLog</text>
+    <g font-size="9.3" fill="#1e293b">
+      <text x="1340" y="850" font-weight="700">PK id</text>
+      <text x="1340" y="864">userId?</text><text x="1500" y="864" fill="#64748b" font-size="8.3">String? (no FK)</text>
+      <text x="1340" y="878">action</text><text x="1500" y="878" fill="#64748b" font-size="8.3">LOGIN/ROLE_CHANGE/..</text>
+      <text x="1340" y="892">details?</text><text x="1340" y="906">createdAt</text>
+      <text x="1340" y="924" font-weight="700" fill="#b91c1c" font-size="9">@@index(userId,action,createdAt)</text>
+    </g>
+
+    <rect x="1590" y="810" width="230" height="150" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="1.5"/>
+    <rect x="1590" y="810" width="230" height="26" fill="#ef4444" rx="8"/>
+    <rect x="1590" y="828" width="230" height="8" fill="#ef4444"/>
+    <text x="1705" y="828" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">CostAnalysis</text>
+    <g font-size="9.3" fill="#1e293b">
+      <text x="1600" y="850" font-weight="700">PK id</text>
+      <text x="1600" y="864">date</text><text x="1760" y="864" fill="#64748b" font-size="8.3">String @unique</text>
+      <text x="1600" y="878">costPerUser, costPerTrip</text><text x="1600" y="892" fill="#64748b" font-size="8.3">Float</text>
+      <text x="1600" y="906">apiBreakdown</text><text x="1760" y="906" fill="#64748b" font-size="8.3">Json</text>
+      <text x="1600" y="920">createdAt</text>
+    </g>
+  </g>
+  <path d="M 1080 660 C 900 660, 800 600, 280 380" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+
+  <!-- ============ BLOG CLUSTER ============ -->
+  <g>
+    <rect x="40" y="900" width="480" height="290" rx="14" fill="#fdf4ff" stroke="#e9a3f9" stroke-width="2"/>
+    <text x="60" y="925" font-size="15" font-weight="700" fill="#701a75">Blog Cluster (standalone)</text>
+
+    <rect x="60" y="940" width="440" height="230" rx="8" fill="#ffffff" stroke="#c026d3" stroke-width="1.5"/>
+    <rect x="60" y="940" width="440" height="26" fill="#c026d3" rx="8"/>
+    <rect x="60" y="958" width="440" height="8" fill="#c026d3"/>
+    <text x="280" y="958" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Article</text>
+    <g font-size="9.5" fill="#1e293b">
+      <text x="70" y="982" font-weight="700">PK id</text><text x="70" y="996">slug</text><text x="230" y="996" fill="#64748b" font-size="8.5">String @unique</text>
+      <text x="70" y="1010">title, excerpt, category, city</text>
+      <text x="70" y="1024">categoryIcon, categoryBadgeBg/Text</text>
+      <text x="70" y="1038">readingTime</text><text x="270" y="1038" fill="#64748b" font-size="8.5">String</text>
+      <text x="70" y="1052">author</text><text x="270" y="1052" fill="#64748b" font-size="8.5">Json</text>
+      <text x="70" y="1066">collaborators?</text><text x="270" y="1066" fill="#64748b" font-size="8.5">Json?</text>
+      <text x="70" y="1080">date, imageUrl</text>
+      <text x="70" y="1094">featured?, featuredOrder?</text>
+      <text x="70" y="1108">likes, views, commentsCount, controversialScore, timesPlanned</text>
+      <text x="70" y="1122">budget?, bestSeason?, accommodation?, transportMode?</text>
+      <text x="70" y="1136">itineraryStops?</text><text x="270" y="1136" fill="#64748b" font-size="8.5">Json?</text>
+      <text x="70" y="1150">content?</text><text x="270" y="1150" fill="#64748b" font-size="8.5">String? @db.Text</text>
+      <text x="70" y="1160" font-style="italic" fill="#64748b" font-size="9">mediaType?, videoUrl?, comments? (Json?), createdAt, updatedAt</text>
+    </g>
+  </g>
+
+  <!-- ============ TRANSIT (GTFS) CLUSTER ============ -->
+  <g>
+    <rect x="560" y="920" width="1430" height="380" rx="14" fill="#ecfeff" stroke="#67e8f9" stroke-width="2"/>
+    <text x="580" y="945" font-size="15" font-weight="700" fill="#164e63">Transit Cluster (GTFS-style tables)</text>
+
+    <rect x="580" y="965" width="240" height="150" rx="8" fill="#ffffff" stroke="#06b6d4" stroke-width="1.5"/>
+    <rect x="580" y="965" width="240" height="26" fill="#06b6d4" rx="8"/>
+    <rect x="580" y="983" width="240" height="8" fill="#06b6d4"/>
+    <text x="700" y="983" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">TransitStop</text>
+    <g font-size="9.8" fill="#1e293b">
+      <text x="590" y="1007" font-weight="700">PK stop_id</text><text x="740" y="1007" fill="#64748b" font-size="8.5">String</text>
+      <text x="590" y="1021">stop_name</text><text x="740" y="1021" fill="#64748b" font-size="8.5">String</text>
+      <text x="590" y="1035">lat, lon</text><text x="740" y="1035" fill="#64748b" font-size="8.5">Float</text>
+      <text x="590" y="1049">transport_type</text><text x="740" y="1049" fill="#64748b" font-size="8.5">TRAIN/BUS</text>
+      <line x1="585" y1="1058" x2="815" y2="1058" stroke="#cbd5e1"/>
+      <text x="590" y="1073" fill="#0e7490" font-size="9.3">→ stopTimes TransitStopTime[]</text>
+      <text x="590" y="1090" font-weight="700" fill="#0891b2" font-size="9">@@index N/A (PK only)</text>
+    </g>
+
+    <rect x="850" y="965" width="240" height="150" rx="8" fill="#ffffff" stroke="#06b6d4" stroke-width="1.5"/>
+    <rect x="850" y="965" width="240" height="26" fill="#06b6d4" rx="8"/>
+    <rect x="850" y="983" width="240" height="8" fill="#06b6d4"/>
+    <text x="970" y="983" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">TransitRoute</text>
+    <g font-size="9.8" fill="#1e293b">
+      <text x="860" y="1007" font-weight="700">PK route_id</text><text x="1010" y="1007" fill="#64748b" font-size="8.5">String</text>
+      <text x="860" y="1021">short_name, long_name</text>
+      <text x="860" y="1035">agency_id?</text><text x="1010" y="1035" fill="#64748b" font-size="8.5">String?</text>
+      <line x1="855" y1="1050" x2="1085" y2="1050" stroke="#cbd5e1"/>
+      <text x="860" y="1065">→ trips TransitTrip[]</text>
+    </g>
+
+    <rect x="1120" y="965" width="240" height="150" rx="8" fill="#ffffff" stroke="#06b6d4" stroke-width="1.5"/>
+    <rect x="1120" y="965" width="240" height="26" fill="#06b6d4" rx="8"/>
+    <rect x="1120" y="983" width="240" height="8" fill="#06b6d4"/>
+    <text x="1240" y="983" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">TransitCalendar</text>
+    <g font-size="9.8" fill="#1e293b">
+      <text x="1130" y="1007" font-weight="700">PK service_id</text><text x="1310" y="1007" fill="#64748b" font-size="8.5">String</text>
+      <text x="1130" y="1021">monday..sunday</text><text x="1310" y="1021" fill="#64748b" font-size="8.5">Boolean x7</text>
+      <line x1="1125" y1="1040" x2="1355" y2="1040" stroke="#cbd5e1"/>
+      <text x="1130" y="1055">→ trips TransitTrip[]</text>
+    </g>
+
+    <rect x="1390" y="965" width="270" height="170" rx="8" fill="#ffffff" stroke="#06b6d4" stroke-width="1.5"/>
+    <rect x="1390" y="965" width="270" height="26" fill="#06b6d4" rx="8"/>
+    <rect x="1390" y="983" width="270" height="8" fill="#06b6d4"/>
+    <text x="1525" y="983" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">TransitTrip</text>
+    <g font-size="9.5" fill="#1e293b">
+      <text x="1400" y="1007" font-weight="700">PK trip_id</text><text x="1580" y="1007" fill="#64748b" font-size="8.5">String</text>
+      <text x="1400" y="1021" font-weight="700" fill="#b45309">FK route_id</text><text x="1580" y="1021" fill="#64748b" font-size="8.5">→ TransitRoute</text>
+      <text x="1400" y="1035" font-weight="700" fill="#b45309">FK service_id</text><text x="1580" y="1035" fill="#64748b" font-size="8.5">→ TransitCalendar</text>
+      <line x1="1395" y1="1044" x2="1655" y2="1044" stroke="#cbd5e1"/>
+      <text x="1400" y="1059">→ stopTimes TransitStopTime[]</text>
+      <text x="1400" y="1076" fill="#64748b" font-size="8.7">onDelete: Cascade (both FKs)</text>
+    </g>
+
+    <!-- TransitStopTime, wide, below -->
+    <rect x="850" y="1150" width="480" height="130" rx="8" fill="#ffffff" stroke="#06b6d4" stroke-width="1.5"/>
+    <rect x="850" y="1150" width="480" height="26" fill="#06b6d4" rx="8"/>
+    <rect x="850" y="1168" width="480" height="8" fill="#06b6d4"/>
+    <text x="1090" y="1168" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">TransitStopTime</text>
+    <g font-size="9.8" fill="#1e293b">
+      <text x="860" y="1192" font-weight="700">PK (trip_id, stop_sequence)</text><text x="1150" y="1192" fill="#64748b" font-size="8.5">composite PK</text>
+      <text x="860" y="1206" font-weight="700" fill="#b45309">FK trip_id</text><text x="1050" y="1206" fill="#64748b" font-size="8.5">→ TransitTrip (Cascade)</text>
+      <text x="860" y="1220" font-weight="700" fill="#b45309">FK stop_id</text><text x="1050" y="1220" fill="#64748b" font-size="8.5">→ TransitStop (Cascade)</text>
+      <text x="860" y="1234">arrival_time, departure_time</text><text x="1150" y="1234" fill="#64748b" font-size="8.5">String</text>
+      <text x="860" y="1248">stop_sequence, day_offset</text><text x="1150" y="1248" fill="#64748b" font-size="8.5">Int</text>
+      <text x="860" y="1264" font-weight="700" fill="#0891b2" font-size="9">@@index([stop_id])</text>
+    </g>
+
+    <!-- relations -->
+    <path d="M 1090 1044 C 1090 1100, 1090 1120, 1090 1150" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+    <path d="M 1525 1135 C 1525 1150, 1330 1160, 1330 1150" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+    <path d="M 970 1115 L 970 965" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)" transform="translate(0,0)"/>
+    <path d="M 1090 965 C 1090 900, 970 900, 970 1115" stroke="none" fill="none"/>
+
+    <!-- Route -> Trip -->
+    <path d="M 1090 991 C 1200 940, 1300 940, 1390 991" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+    <!-- Calendar -> Trip -->
+    <path d="M 1360 1030 L 1390 1030" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+    <!-- Stop -> StopTime -->
+    <path d="M 750 1115 C 750 1180, 800 1190, 850 1200" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+    <!-- Trip -> StopTime -->
+    <path d="M 1500 1135 C 1500 1170, 1400 1180, 1330 1195" stroke="#334155" stroke-width="1.5" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+  </g>
+
+  <!-- ============ LEGEND ============ -->
+  <g font-size="11.5">
+    <rect x="40" y="1330" width="700" height="140" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="60" y="1355" font-weight="700" fill="#0f172a" font-size="13">Legend</text>
+    <line x1="60" y1="1375" x2="110" y2="1375" stroke="#334155" stroke-width="1.5" marker-start="url(#one)" marker-end="url(#many)"/>
+    <text x="120" y="1379" fill="#334155">One-to-many relationship (1 ── ∞)</text>
+    <text x="60" y="1400" fill="#b45309" font-weight="700">FK fieldName</text><text x="220" y="1400" fill="#334155">Foreign key field, references parent PK</text>
+    <text x="60" y="1420" font-weight="700" fill="#0f172a">PK id</text><text x="220" y="1420" fill="#334155">Primary key field</text>
+    <text x="60" y="1440" font-weight="700" fill="#7c3aed">@@unique([...])</text><text x="280" y="1440" fill="#334155">Composite unique constraint</text>
+    <text x="60" y="1460" font-weight="700" fill="#0891b2">@@index([...])</text><text x="280" y="1460" fill="#334155">Non-unique composite index</text>
+  </g>
+
+  <g font-size="11">
+    <rect x="760" y="1330" width="700" height="140" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="780" y="1355" font-weight="700" fill="#0f172a" font-size="13">Notes</text>
+    <text x="780" y="1378" fill="#334155">• Flight, Bus, Train, Hotel, PlaceCache, PnrCache, Landmark are standalone cache</text>
+    <text x="780" y="1393" fill="#334155">  tables populated by the FastAPI services layer — no relations to User.</text>
+    <text x="780" y="1410" fill="#334155">• DailySystemStat, SystemAnomaly, AuditLog, CostAnalysis are standalone analytics</text>
+    <text x="780" y="1425" fill="#334155">  tables (system-wide, not scoped to a user).</text>
+    <text x="780" y="1442" fill="#334155">• Article (blog) has zero foreign keys — fully independent of User/auth model.</text>
+    <text x="780" y="1459" fill="#334155">• All User-owned children cascade delete except Feedback/TripAttempt (SetNull/nullable userId).</text>
+  </g>
+</svg>
