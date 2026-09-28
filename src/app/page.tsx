@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { UserAvatar } from '@/components/UserAvatar';
 import { FeedbackModal } from '@/components/FeedbackModal';
 import { ArrowRight, Menu, X, MessageSquare, MapPin, Compass, Clock, Wallet } from 'lucide-react';
+import { Article } from '@/data/blogData';
 
 const TOURIST_ATTRACTIONS = [
   'Taj Mahal, Agra',
@@ -61,12 +62,14 @@ export default function LandingPage() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const [bgImages, setBgImages] = useState<string[]>([
-    '/landing_1.png',
-    '/landing_2.png',
-    '/landing_3.png',
-    '/landing_4.jpg',
-    '/landing_5.jpg',
+    '\public\landing_1.png',
+    '\public\landing_2.png',
+    '\public\landing_3.png',
+    '\public\landing_4.jpg',
+    '\public\landing_5.jpg',
   ]);
+
+  const [blogDestinations, setBlogDestinations] = useState<Article[]>([]);
 
   const { scrollY } = useScroll();
   const heroImgY = useTransform(scrollY, [0, 900], [0, 220]);
@@ -82,6 +85,22 @@ export default function LandingPage() {
           `/api/destination-photo?name=${encodeURIComponent(place)}&type=place&redirect=true&width=${imgWidth}`
       )
     );
+  }, []);
+
+  useEffect(() => {
+    const fetchBlogDestinations = async () => {
+      try {
+        const res = await fetch('/api/blogs');
+        if (!res.ok) return;
+        const data: Article[] = await res.json();
+        const withImages = data.filter((a) => a.imageUrl);
+        const shuffled = [...withImages].sort(() => 0.5 - Math.random());
+        setBlogDestinations(shuffled.slice(0, 6));
+      } catch (e) {
+        console.error('Unable to load blog destinations.', e);
+      }
+    };
+    fetchBlogDestinations();
   }, []);
 
   useEffect(() => {
@@ -102,38 +121,31 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 w-full z-[100] flex items-center justify-between px-6 py-4 bg-[#FFFBF5]/80 backdrop-blur-xl border-b border-black/5 font-sans transition-all duration-300">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2 md:gap-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push('/')}>
-            <div className="hidden md:block relative w-28 h-10 flex-shrink-0">
-              <img
-                src="/large_logo_2.png"
-                alt="PlanBro Logo"
-                className="absolute -top-3 -left-2 h-16 w-auto max-w-none object-contain"
-              />
-            </div>
             <span className="font-extrabold text-2xl tracking-tight text-[#1a1523] z-10 relative">PlanBro</span>
           </div>
 
           <div className="hidden lg:flex items-center gap-7 lg:gap-8 ml-8 xl:ml-14">
             <button
               onClick={() => router.push('/blog')}
-              className="text-base tracking-wide font-bold bg-gradient-to-r from-[#FF8A3D] to-[#FF5D8F] bg-clip-text text-transparent opacity-90 hover:opacity-100 transition-opacity duration-200"
+              className="text-base tracking-wide font-bold text-[#1a1523] hover:text-[#FF5D8F] transition-colors duration-300 ease-in-out"
             >
               Discover Blogs & Videos
             </button>
             <button
               onClick={() => handleNavigation('/recommend')}
-              className="text-base tracking-wide font-bold text-[#1a1523]/60 hover:text-[#1a1523] transition-colors duration-200"
+              className="text-base tracking-wide font-bold text-[#1a1523] hover:text-[#FF5D8F] transition-colors duration-300 ease-in-out"
             >
               Recommend Trips
             </button>
             <button
               onClick={() => handleNavigation('/plan/setup')}
-              className="text-base tracking-wide font-bold text-[#1a1523]/60 hover:text-[#1a1523] transition-colors duration-200"
+              className="text-base tracking-wide font-bold text-[#1a1523] hover:text-[#FF5D8F] transition-colors duration-300 ease-in-out"
             >
               Plan a Trip
             </button>
             <button
               onClick={() => handleNavigation('/quick-trip')}
-              className="text-base tracking-wide font-bold text-[#1a1523]/60 hover:text-[#1a1523] transition-colors duration-200"
+              className="text-base tracking-wide font-bold text-[#1a1523] hover:text-[#FF5D8F] transition-colors duration-300 ease-in-out"
             >
               Plan a Hangout in Your City
             </button>
@@ -168,9 +180,10 @@ export default function LandingPage() {
           ) : (
             <button
               onClick={() => router.push('/login')}
-              className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-[#1a1523] text-white text-[13px] font-bold whitespace-nowrap transition-all duration-200 hover:bg-[#FF5D8F] hover:-translate-y-0.5 hover:shadow-[0_6px_18px_-4px_rgba(255,93,143,0.6)]"
+              className="group relative overflow-hidden px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-[#1a1523] text-[13px] font-bold whitespace-nowrap transition-all duration-500 ease-in-out hover:-translate-y-0.5"
             >
-              Sign in
+              <span className="absolute z-0 left-1/2 top-1/2 w-[300%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full scale-100 group-hover:scale-0 origin-center bg-white transition-transform duration-500 ease-in-out" />
+              <span className="relative z-10 text-[#1a1523] transition-colors duration-300 ease-in-out group-hover:text-white">Sign in</span>
             </button>
           )}
         </div>
@@ -251,16 +264,18 @@ export default function LandingPage() {
           >
             <button
               onClick={() => handleNavigation('/plan/setup')}
-              className="group px-7 py-4 rounded-full bg-white text-[#1a1523] font-bold text-base flex items-center gap-2 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.3)] transition-all duration-200 hover:bg-[#FFD166] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-6px_rgba(255,209,102,0.7)]"
+              className="group relative overflow-hidden px-7 py-4 rounded-full bg-white text-[#1a1523] font-bold text-base flex items-center gap-2 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.3)] transition-all duration-500 ease-in-out hover:-translate-y-0.5"
             >
-              Plan my trip
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              <span className="absolute left-1/2 top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full scale-0 group-hover:scale-[15] origin-center bg-[#1a1523] transition-transform duration-500 ease-in-out" />
+              <span className="relative transition-colors duration-300 ease-in-out group-hover:text-white">Plan my trip</span>
+              <ArrowRight className="relative w-4 h-4 group-hover:translate-x-1 group-hover:text-white transition-all duration-300 ease-in-out" />
             </button>
             <button
               onClick={() => handleNavigation('/recommend')}
-              className="px-7 py-4 rounded-full bg-white text-[#1a1523] font-bold text-base border-2 border-white transition-all duration-200 hover:bg-transparent hover:text-white hover:-translate-y-0.5"
+              className="group relative overflow-hidden px-7 py-4 rounded-full bg-white text-[#1a1523] font-bold text-base border-2 border-white transition-all duration-500 ease-in-out hover:-translate-y-0.5"
             >
-              Not sure? Get inspired
+              <span className="absolute left-1/2 top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full scale-0 group-hover:scale-[15] origin-center bg-[#1a1523] transition-transform duration-500 ease-in-out" />
+              <span className="relative transition-colors duration-300 ease-in-out group-hover:text-white">Not sure? Get inspired</span>
             </button>
           </motion.div>
         </div>
@@ -334,24 +349,37 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
-            {bgImages.map((src, i) => (
+            {blogDestinations.map((article, i) => (
               <motion.div
-                key={i}
+                key={article.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                onClick={() => handleNavigation('/plan/setup')}
+                onClick={() => router.push(`/blog/u/${encodeURIComponent(article.author?.username || 'traveler')}/${encodeURIComponent(article.slug)}`)}
                 className={`relative rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer group shadow-[0_2px_16px_-6px_rgba(0,0,0,0.15)] ${i === 0 ? 'col-span-2 row-span-2 aspect-square md:aspect-auto' : 'aspect-square'}`}
               >
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                  style={{ backgroundImage: `url('${src}')` }}
-                />
+                {article.videoUrl ? (
+                  <video
+                    src={article.videoUrl}
+                    poster={article.imageUrl}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                    style={{ backgroundImage: `url('${article.imageUrl}')` }}
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5 flex items-center justify-between">
                   <span className="text-white font-bold text-sm md:text-base flex items-center gap-1.5">
                     <MapPin size={14} className="text-[#FFD166]" />
+                    {article.city}
                   </span>
                   <ArrowRight className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
