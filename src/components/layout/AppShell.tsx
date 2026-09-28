@@ -165,11 +165,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <button
               onClick={() => setIsFeedbackOpen(true)}
-              className={`h-7 px-2 sm:px-3 rounded-full border transition-colors flex items-center justify-center gap-1.5 shrink-0 ${forceLightHeader ? 'border-neutral-300 hover:border-neutral-500 bg-neutral-100 text-neutral-600' : 'border-neutral-300 dark:border-white/20 hover:border-neutral-500 dark:hover:border-white/50 bg-neutral-100 dark:bg-white/5 text-neutral-600 dark:text-neutral-300'}`}
+              className={`group relative overflow-hidden h-7 px-2 sm:px-3 rounded-full border transition-all duration-500 ease-in-out flex items-center justify-center gap-1.5 shrink-0 ${forceLightHeader ? 'border-neutral-300 bg-neutral-100 text-neutral-600' : 'border-neutral-300 dark:border-white/20 bg-neutral-100 dark:bg-white/5 text-neutral-600 dark:text-neutral-300'}`}
               title="Send Us Feedback!"
             >
-              <MessageSquare size={13} />
-              <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-widest">Send Us Feedback</span>
+              <span className="absolute z-0 left-1/2 top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full scale-0 group-hover:scale-[15] origin-center bg-[#1a1523] transition-transform duration-500 ease-in-out" />
+              <MessageSquare size={13} className="relative z-10 transition-colors duration-300 ease-in-out group-hover:text-white" />
+              <span className="relative z-10 hidden sm:inline-block text-[10px] font-bold uppercase tracking-widest transition-colors duration-300 ease-in-out group-hover:text-white">Send Us Feedback</span>
             </button>
             <Link href={user?.username ? `/u/${encodeURIComponent(user.username)}` : '/profile'} className={`w-7 h-7 rounded-full border transition-colors flex items-center justify-center overflow-hidden shrink-0 ${forceLightHeader ? 'border-neutral-300 hover:border-neutral-500 bg-neutral-100 text-neutral-600' : 'border-neutral-300 dark:border-white/20 hover:border-neutral-500 dark:hover:border-white/50 bg-neutral-100 dark:bg-white/5 text-neutral-600 dark:text-neutral-300'}`}>
               {isLoading ? (

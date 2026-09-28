@@ -163,11 +163,12 @@ export default function LandingPage() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsFeedbackOpen(true)}
-                className="h-8 px-3 rounded-full bg-black/5 hover:bg-black/10 border border-black/10 transition-colors flex items-center gap-2 text-[#1a1523] shrink-0"
+                className="group relative overflow-hidden h-8 px-3 rounded-full bg-black/5 border border-black/10 transition-all duration-500 ease-in-out flex items-center gap-2 text-[#1a1523] shrink-0"
                 title="Send us Feedback"
               >
-                <MessageSquare size={14} />
-                <span className="hidden sm:inline-block text-xs font-bold uppercase tracking-widest">Send Us Feedback</span>
+                <span className="absolute z-0 left-1/2 top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full scale-0 group-hover:scale-[15] origin-center bg-[#1a1523] transition-transform duration-500 ease-in-out" />
+                <MessageSquare size={14} className="relative z-10 transition-colors duration-300 ease-in-out group-hover:text-white" />
+                <span className="relative z-10 hidden sm:inline-block text-xs font-bold uppercase tracking-widest transition-colors duration-300 ease-in-out group-hover:text-white">Send Us Feedback</span>
               </button>
               <button
                 onClick={() => router.push(user.username ? `/u/${encodeURIComponent(user.username)}` : '/profile')}
@@ -428,15 +429,15 @@ export default function LandingPage() {
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6, delay: 0.08 }}
               onClick={() => handleNavigation('/plan/setup')}
-              className="bg-gradient-to-br from-[#FF8A3D] to-[#FF5D8F] p-6 md:p-10 min-h-[180px] md:min-h-[260px] rounded-[1.5rem] md:rounded-3xl cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1.5 hover:brightness-110 group shadow-[0_10px_35px_-8px_rgba(255,93,143,0.45)] hover:shadow-[0_16px_45px_-8px_rgba(255,93,143,0.65)] flex flex-col justify-between text-left"
+              className="bg-white border-2 border-black/5 p-6 md:p-10 min-h-[180px] md:min-h-[260px] rounded-[1.5rem] md:rounded-3xl cursor-pointer transition-all duration-300 ease-out shadow-[0_2px_20px_-8px_rgba(0,0,0,0.1)] hover:border-[#FF5D8F] hover:shadow-[0_12px_32px_-8px_rgba(255,93,143,0.35)] hover:-translate-y-1.5 group flex flex-col justify-between text-left"
             >
               <div>
-                <div className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight tracking-tight">Plan Itinerary</div>
-                <div className="text-white/85 text-sm md:text-lg leading-snug">
+                <div className="text-lg md:text-2xl font-bold text-[#1a1523] mb-2 md:mb-4 leading-tight tracking-tight">Plan Itinerary</div>
+                <div className="text-[#1a1523]/60 text-sm md:text-lg leading-snug">
                   Know your destination? We&apos;ll lock down the logistics.
                 </div>
               </div>
-              <div className="flex items-center text-white text-sm md:text-base font-bold group-hover:translate-x-1.5 transition-transform duration-300 mt-6">
+              <div className="flex items-center text-[#1a1523] text-sm md:text-base font-bold group-hover:translate-x-1.5 transition-transform duration-300 mt-6">
                 Start <ArrowRight className="ml-1.5 w-4 h-4 md:w-5 md:h-5" />
               </div>
             </motion.div>
@@ -463,9 +464,18 @@ export default function LandingPage() {
 
           {/* Footer Links */}
           <div className="mt-20 mb-6 flex flex-wrap gap-4 justify-center">
-            <a href="/terms" className="px-4 py-2 rounded-full bg-white/70 text-[#1a1523] text-sm font-semibold border border-black/10 transition-colors duration-200 hover:bg-white">Terms of Service</a>
-            <a href="/privacy" className="px-4 py-2 rounded-full bg-white/70 text-[#1a1523] text-sm font-semibold border border-black/10 transition-colors duration-200 hover:bg-white">Privacy Policy</a>
-            <a href="mailto:support@brewplans.com" className="px-4 py-2 rounded-full bg-white/70 text-[#1a1523] text-sm font-semibold border border-black/10 transition-colors duration-200 hover:bg-white">Contact Us : support@brewplans.com</a>
+            <a href="/terms" className="group relative overflow-hidden px-4 py-2 rounded-full bg-white/70 text-[#1a1523] text-sm font-semibold border border-black/10 transition-all duration-500 ease-in-out">
+              <span className="absolute z-0 left-1/2 top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full scale-0 group-hover:scale-[15] origin-center bg-[#1a1523] transition-transform duration-500 ease-in-out" />
+              <span className="relative z-10 transition-colors duration-300 ease-in-out group-hover:text-white">Terms of Service</span>
+            </a>
+            <a href="/privacy" className="group relative overflow-hidden px-4 py-2 rounded-full bg-white/70 text-[#1a1523] text-sm font-semibold border border-black/10 transition-all duration-500 ease-in-out">
+              <span className="absolute z-0 left-1/2 top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full scale-0 group-hover:scale-[15] origin-center bg-[#1a1523] transition-transform duration-500 ease-in-out" />
+              <span className="relative z-10 transition-colors duration-300 ease-in-out group-hover:text-white">Privacy Policy</span>
+            </a>
+            <a href="mailto:support@brewplans.com" className="group relative overflow-hidden px-4 py-2 rounded-full bg-white/70 text-[#1a1523] text-sm font-semibold border border-black/10 transition-all duration-500 ease-in-out">
+              <span className="absolute z-0 left-1/2 top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full scale-0 group-hover:scale-[30] origin-center bg-[#1a1523] transition-transform duration-500 ease-in-out" />
+              <span className="relative z-10 transition-colors duration-300 ease-in-out group-hover:text-white">Contact Us : support@brewplans.com</span>
+            </a>
           </div>
 
           {/* Social Links */}

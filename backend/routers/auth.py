@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import bcrypt
@@ -37,7 +37,9 @@ def _set_session_cookie(response: Response, token: str, expires_at: datetime) ->
         secure=settings.is_production,
         samesite="lax",
         path="/",
-        expires=expires_at,
+        # expires_at is naive UTC (see _create_session) — set_cookie's usegmt
+        # formatting requires a tz-aware datetime, so attach UTC explicitly.
+        expires=expires_at.replace(tzinfo=timezone.utc),
     )
 
 
