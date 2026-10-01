@@ -1,9 +1,14 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from backend.auth import get_optional_user
 from backend.db import get_pool
 from backend.ids import new_id
+from backend.redis_client import check_rate_limit
+from backend.routers.auth import _client_ip
 
 router = APIRouter(prefix="/api/blogs", tags=["blogs"])
+
+BLOGS_PER_DAY = 10
 
 ARTICLE_COLUMNS = [
     "slug", "title", "excerpt", "category", "city",
@@ -72,7 +77,13 @@ async def list_blogs():
 
 
 @router.post("", status_code=201)
-async def create_blog(req: Request):
+async def create_blog(req: Request, user=Depends(get_optional_user)):
+    # Endpoint isn't auth-gated, so fall back to IP for anonymous callers.
+    subject = f"user:{user['id']}" if user else f"ip:{_client_ip(req)}"
+    rate_limit = await check_rate_limit(f"blog-create:{subject}", BLOGS_PER_DAY, 86400)
+    if not rate_limit["success"]:
+        raise HTTPException(status_code=429, detail=f"Daily limit of {BLOGS_PER_DAY} blogs reached. Try again tomorrow.")
+
     data = await req.json()
     final_order = int(data.get("featuredOrder") or 0)
 
